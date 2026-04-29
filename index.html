@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Book Scanner Pro v4.2</title>
+    <title>Book Scanner Pro v4.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Serif+JP:wght@400;600;900&display=swap');
@@ -22,7 +22,7 @@
         <header class="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#050505]/90 backdrop-blur-md border-b border-white/5">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center font-black text-white shadow-lg">B</div>
-                <h1 class="font-black tracking-tighter text-xl uppercase italic">Scanner <span class="text-blue-500">v4.2</span></h1>
+                <h1 class="font-black tracking-tighter text-xl uppercase italic">Scanner <span class="text-blue-500">v4.3</span></h1>
             </div>
             <button onclick="toggleConfig()" class="p-2.5 bg-white/5 text-white/50 rounded-xl hover:bg-white/10 transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>
@@ -93,8 +93,8 @@
 
         function toggleConfig() { el('config-modal').classList.toggle('hidden'); }
         function saveConfig() {
-            localStorage.setItem('gemini_api_key_v42', el('api-key-input').value.trim());
-            localStorage.setItem('gas_url_v42', el('gas-url').value.trim());
+            localStorage.setItem('gemini_api_key_v43', el('api-key-input').value.trim());
+            localStorage.setItem('gas_url_v43', el('gas-url').value.trim());
             toggleConfig();
             showToast("✓ SETTINGS SAVED");
         }
@@ -124,14 +124,14 @@
             reader.readAsDataURL(file);
         };
 
-        // --- FINAL RECOVERY ENGINE v4.2 ---
+        // --- FINAL RECOVERY ENGINE v4.3 ---
         async function runGeminiAnalysis(key, b64) {
-            // URLから「models/」を動的に生成せず、公式の推奨パスを直接指定
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+            // エラーを避けるため、最も確実に動作するモデル名「gemini-1.5-flash-latest」を指定
+            const endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${key}`;
             
             const payload = {
                 contents: [{ parts: [
-                    { text: "Read the book page in the image and extract: 1. A short impressive quote, 2. Book Title, 3. Author, 4. Page Number. Return ONLY a JSON object like this: {\"quote\": \"...\", \"book_title\": \"...\", \"author\": \"...\", \"page\": \"...\"}" },
+                    { text: "Extract book info from this image: impressive quote, book title, author, page number. Return ONLY a JSON object: {\"quote\": \"...\", \"book_title\": \"...\", \"author\": \"...\", \"page\": \"...\"}" },
                     { inlineData: { mimeType: "image/jpeg", data: b64 } }
                 ]}]
             };
@@ -144,19 +144,26 @@
 
             const data = await res.json();
             if (!res.ok) {
-                const errMsg = data.error?.message || "Unknown error";
-                throw new Error(`[API Error] ${errMsg}`);
-            }
-
-            if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
-                throw new Error("No text found in API response.");
+                // v1がダメな場合は v1beta で再試行
+                if (res.status === 404) {
+                    const fallbackEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`;
+                    const resFallback = await fetch(fallbackEndpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const dataFallback = await resFallback.json();
+                    if (!resFallback.ok) throw new Error(`[API Error] ${dataFallback.error?.message || "Failed"}`);
+                    return dataFallback.candidates[0].content.parts[0].text;
+                }
+                throw new Error(`[API Error] ${data.error?.message || "Unknown error"}`);
             }
 
             return data.candidates[0].content.parts[0].text;
         }
 
         el('analyze-btn').onclick = async () => {
-            const key = localStorage.getItem('gemini_api_key_v42');
+            const key = localStorage.getItem('gemini_api_key_v43');
             if (!key) { showToast("API KEY IS MISSING", true); toggleConfig(); return; }
 
             el('analyze-btn').classList.add('hidden'); 
@@ -166,7 +173,7 @@
             try {
                 const rawText = await runGeminiAnalysis(key, base64Image);
                 const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-                if (!jsonMatch) throw new Error("Could not parse JSON from response.");
+                if (!jsonMatch) throw new Error("Could not parse JSON.");
                 
                 const result = JSON.parse(jsonMatch[0]);
                 el('quote-field').value = result.quote || "";
@@ -178,7 +185,6 @@
                 el('result-view').classList.remove('hidden');
                 showToast("✓ ANALYSIS SUCCESS");
             } catch (err) {
-                console.error(err);
                 showToast(err.message, true);
                 el('analyze-btn').classList.remove('hidden'); 
                 el('loading-ui').classList.add('hidden');
@@ -188,7 +194,7 @@
         };
 
         el('notion-btn').onclick = async () => {
-            const url = localStorage.getItem('gas_url_v42');
+            const url = localStorage.getItem('gas_url_v43');
             if (!url) { showToast("NOTION URL IS MISSING", true); toggleConfig(); return; }
             
             const btn = el('notion-btn');
@@ -214,8 +220,8 @@
         };
 
         window.onload = () => {
-            el('gas-url').value = localStorage.getItem('gas_url_v42') || "";
-            el('api-key-input').value = localStorage.getItem('gemini_api_key_v42') || "";
+            el('gas-url').value = localStorage.getItem('gas_url_v43') || "";
+            el('api-key-input').value = localStorage.getItem('gemini_api_key_v43') || "";
         };
     </script>
 </body>
