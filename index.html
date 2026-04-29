@@ -3,24 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Book Scanner Pro v3.7</title>
+    <title>Book Scanner Pro v3.8</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Serif+JP:wght@400;600;900&display=swap');
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #080808; color: #e5e5e5; }
         .serif { font-family: 'Noto Serif JP', serif; }
         
-        /* Scan Animation */
         .scan-animation { animation: scan 2.5s ease-in-out infinite; }
         @keyframes scan { 0% { top: 0; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
         
         .bg-glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.05); }
         .fade-in { animation: fadeIn 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Smooth Scroll */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-blue-500/30">
@@ -29,7 +24,7 @@
         <header class="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#080808]/90 backdrop-blur-lg border-b border-white/5">
             <div class="flex items-center gap-3">
                 <div class="w-7 h-7 bg-blue-600 rounded flex items-center justify-center font-black text-xs shadow-lg shadow-blue-600/30">B</div>
-                <h1 class="font-black tracking-tighter text-base uppercase italic text-white/90">Scanner Pro <span class="text-blue-500">v3.7</span></h1>
+                <h1 class="font-black tracking-tighter text-base uppercase italic text-white/90">Scanner Pro <span class="text-blue-500">v3.8</span></h1>
             </div>
             <div class="flex gap-2">
                 <button onclick="enterViewerMode()" title="Viewer Mode" class="p-2.5 bg-white/5 text-white/60 rounded-xl hover:bg-white/10 transition-colors">
@@ -42,7 +37,6 @@
         </header>
 
         <main class="flex-1 px-6 pb-32 overflow-y-auto">
-            <!-- Camera / Upload Trigger -->
             <div id="preview-area" class="relative mt-6 rounded-[2rem] bg-[#111] aspect-[3/4] overflow-hidden border border-white/5 shadow-inner transition-all flex items-center justify-center group">
                 <input type="file" id="file-input" accept="image/*" capture="environment" class="absolute inset-0 opacity-0 cursor-pointer z-20">
                 
@@ -58,7 +52,7 @@
             </div>
 
             <div id="action-area" class="mt-8">
-                <button id="analyze-btn" class="hidden w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl text-white font-black text-sm active:scale-[0.98] transition-all uppercase tracking-[0.2em] shadow-xl shadow-blue-900/20">Analyze with Gemini</button>
+                <button id="analyze-btn" class="hidden w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl text-white font-black text-sm active:scale-[0.98] transition-all uppercase tracking-[0.2em]">Analyze with Gemini</button>
                 
                 <div id="loading-ui" class="hidden py-10 space-y-4 text-center">
                     <div class="inline-block w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
@@ -66,11 +60,10 @@
                 </div>
             </div>
 
-            <!-- Analysis Result -->
             <div id="result-view" class="hidden mt-8 space-y-6 fade-in">
                 <div class="bg-glass rounded-3xl p-6 space-y-6 border border-white/10 shadow-2xl">
                     <div class="flex justify-between items-center border-b border-white/5 pb-4">
-                        <span class="text-[10px] font-black text-blue-400 uppercase tracking-widest">AI Intelligence</span>
+                        <span class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Extracted Insight</span>
                         <button onclick="resetApp()" class="text-[10px] font-bold text-white/20 hover:text-white/50 transition-colors uppercase">Discard</button>
                     </div>
 
@@ -90,282 +83,200 @@
                         </div>
                         <div>
                             <label class="text-[9px] font-black text-white/40 uppercase tracking-wider">Page</label>
-                            <input id="page-field" type="number" class="w-full bg-black/40 p-3 rounded-xl text-sm font-bold border border-white/5">
+                            <input id="page-field" type="text" class="w-full bg-black/40 p-3 rounded-xl text-sm font-bold border border-white/5">
                         </div>
-                    </div>
-
-                    <div>
-                        <label class="text-[9px] font-black text-white/40 uppercase tracking-wider">Chapter / Context</label>
-                        <input id="chapter-field" class="w-full bg-black/40 p-3 rounded-xl text-sm border border-white/5">
                     </div>
                     
                     <textarea id="fulltext-field" class="hidden"></textarea>
                 </div>
 
-                <button id="notion-btn" class="w-full bg-white text-black py-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-neutral-200">
+                <button id="notion-btn" class="w-full bg-white text-black py-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M4.459 4.218c.856-.472 2.012-.763 3.441-.856l11.455-.744a1 1 0 0 1 1.066.983v15.8a1 1 0 0 1-.956.998l-12.115.787a1 1 0 0 1-1.065-.983V4.218zm1.903.856V19.81l9.143-.594V5.668l-9.143.594z"/></svg>
                     Send to Notion
                 </button>
             </div>
         </main>
 
-        <!-- Configuration -->
         <div id="config-modal" class="hidden fixed inset-0 bg-black/98 z-[100] backdrop-blur-2xl flex flex-col justify-center p-8">
             <div class="max-w-xs mx-auto w-full space-y-8">
-                <div class="space-y-2">
-                    <h2 class="text-3xl font-black italic tracking-tighter text-white">SYSTEM<br>CONFIG</h2>
-                    <p class="text-white/30 text-[10px] font-bold uppercase tracking-widest leading-relaxed">Required for AI & Database Sync</p>
-                </div>
-                
+                <h2 class="text-3xl font-black italic tracking-tighter text-white">SYSTEM<br>CONFIG</h2>
                 <div class="space-y-4">
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Google Gemini API Key</label>
-                        <input type="password" id="api-key-input" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500/50 text-sm text-blue-400 placeholder:text-white/10" placeholder="AI Studio Key...">
+                        <label class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Gemini API Key</label>
+                        <input type="password" id="api-key-input" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500/50 text-sm" placeholder="AI Studio Key...">
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Notion GAS Endpoint</label>
-                        <input type="text" id="gas-url" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500/50 text-[10px] font-mono text-blue-400 placeholder:text-white/10" placeholder="https://script.google.com/...">
+                        <label class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Notion GAS URL</label>
+                        <input type="text" id="gas-url" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500/50 text-[10px] font-mono" placeholder="https://script.google.com/...">
                     </div>
                 </div>
-
-                <div class="pt-4 space-y-3">
-                    <button onclick="saveConfig()" class="w-full bg-blue-600 p-5 rounded-2xl font-black text-sm active:scale-95 transition-all">Apply Changes</button>
-                    <button onclick="toggleConfig()" class="w-full text-white/20 text-[10px] font-black uppercase tracking-widest py-4">Dismiss</button>
-                </div>
+                <button onclick="saveConfig()" class="w-full bg-blue-600 p-5 rounded-2xl font-black text-sm active:scale-95 transition-all">Save Changes</button>
             </div>
         </div>
 
         <div id="toast" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-4 rounded-full text-[10px] font-black shadow-2xl z-[200]"></div>
     </div>
 
-    <!-- Cinematic Viewer -->
-    <div id="viewer-mode" class="hidden fixed inset-0 bg-[#060606] z-[1000] flex flex-col items-center justify-center p-8 md:p-20 overflow-hidden">
-        <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-radial-gradient from-blue-900/10 via-transparent to-transparent pointer-events-none"></div>
-
-        <div id="viewer-container" class="max-w-5xl w-full h-full flex flex-col justify-center items-center relative z-10 text-center">
-            <div id="viewer-content" class="fade-in space-y-16 opacity-0 transition-opacity duration-1000">
-                <div class="flex items-center justify-center gap-6 opacity-30">
-                    <div class="h-[1px] w-12 bg-white"></div>
-                    <span class="text-[10px] font-black uppercase tracking-[1em] text-white">Insight Reflection</span>
-                    <div class="h-[1px] w-12 bg-white"></div>
-                </div>
-
-                <div class="relative">
-                    <svg class="absolute -top-12 -left-8 w-16 h-16 text-blue-500/10" fill="currentColor" viewBox="0 0 32 32"><path d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H8c0-2.2 1.8-4 4-4V8h-2zm14 0c-3.3 0-6 2.7-6 6v10h10V14h-6c0-2.2 1.8-4 4-4V8h-2z"/></svg>
-                    <p id="viewer-quote" class="serif text-3xl md:text-5xl lg:text-6xl text-white/95 leading-[1.7] md:leading-[1.8] font-medium tracking-normal md:tracking-wide text-center px-4"></p>
-                </div>
-                
-                <div class="pt-12 flex flex-col items-center space-y-4">
-                    <h2 id="viewer-book" class="text-white/40 font-black uppercase tracking-[0.3em] text-sm md:text-lg italic border-b border-white/10 pb-2"></h2>
-                    <p id="viewer-meta" class="text-white/20 text-[9px] md:text-[11px] font-bold uppercase tracking-[0.4em]"></p>
-                </div>
+    <!-- Viewer -->
+    <div id="viewer-mode" class="hidden fixed inset-0 bg-[#060606] z-[1000] flex flex-col items-center justify-center p-8">
+        <div id="viewer-content" class="max-w-5xl w-full text-center space-y-12 transition-opacity duration-700">
+            <p id="viewer-quote" class="serif text-3xl md:text-5xl text-white/95 leading-[1.8]"></p>
+            <div class="space-y-2">
+                <h2 id="viewer-book" class="text-white/40 font-black tracking-widest text-lg italic"></h2>
+                <p id="viewer-meta" class="text-white/20 text-[10px] font-bold tracking-widest uppercase"></p>
             </div>
         </div>
-
-        <button onclick="exitViewerMode()" class="absolute top-10 right-10 p-5 bg-white/5 text-white/20 rounded-full hover:bg-white/10 transition-all border border-white/5">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-        
-        <div class="absolute bottom-12 text-[8px] font-black text-white/10 uppercase tracking-[0.8em]">Deep Reading Protocol Activated</div>
+        <button onclick="exitViewerMode()" class="absolute top-10 right-10 p-4 bg-white/5 text-white/20 rounded-full">✕</button>
     </div>
 
     <script>
         const el = id => document.getElementById(id);
-        const els = {
-            file: el('file-input'), img: el('image-display'), placeholder: el('placeholder-ui'),
-            analyze: el('analyze-btn'), scanLine: el('scan-line'), results: el('result-view'),
-            loading: el('loading-ui'), quote: el('quote-field'), fullText: el('fulltext-field'),
-            book: el('book-field'), author: el('author-field'), page: el('page-field'), chapter: el('chapter-field'),
-            notion: el('notion-btn'), toast: el('toast'), modal: el('config-modal'), 
-            gasInput: el('gas-url'), apiKeyInput: el('api-key-input'), 
-            viewer: el('viewer-mode'), vQuote: el('viewer-quote'), vBook: el('viewer-book'), vMeta: el('viewer-meta')
-        };
-
         let base64Image = "";
         let historyData = [];
-        let viewerInterval = null;
 
-        function toggleConfig() { els.modal.classList.toggle('hidden'); }
+        function toggleConfig() { el('config-modal').classList.toggle('hidden'); }
         function saveConfig() {
-            localStorage.setItem('gas_url', els.gasInput.value.trim());
-            localStorage.setItem('gemini_api_key', els.apiKeyInput.value.trim());
+            localStorage.setItem('gas_url', el('gas-url').value.trim());
+            localStorage.setItem('gemini_api_key', el('api-key-input').value.trim());
             toggleConfig();
-            showToast("✓ CONFIG SECURED");
-            fetchHistory();
+            showToast("✓ CONFIG SAVED");
         }
 
         function showToast(m, isErr = false) {
-            els.toast.textContent = m; els.toast.style.backgroundColor = isErr ? "#ef4444" : "white";
-            els.toast.style.color = isErr ? "white" : "black";
-            els.toast.classList.remove('hidden');
-            setTimeout(() => { els.toast.classList.add('hidden') }, 3000);
+            const t = el('toast');
+            t.textContent = m; t.style.backgroundColor = isErr ? "#ef4444" : "white";
+            t.style.color = isErr ? "white" : "black";
+            t.classList.remove('hidden');
+            setTimeout(() => { t.classList.add('hidden') }, 3500);
         }
 
         function resetApp() {
-            els.results.classList.add('hidden'); els.placeholder.classList.remove('hidden');
-            els.img.classList.add('hidden'); els.analyze.classList.add('hidden');
-            els.file.value = "";
+            el('result-view').classList.add('hidden'); el('placeholder-ui').classList.remove('hidden');
+            el('image-display').classList.add('hidden'); el('analyze-btn').classList.add('hidden');
         }
 
-        // Init config
-        els.gasInput.value = localStorage.getItem('gas_url') || "";
-        els.apiKeyInput.value = localStorage.getItem('gemini_api_key') || "";
-
-        els.file.onchange = (e) => {
+        el('file-input').onchange = (e) => {
             const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = (ev) => {
                 base64Image = ev.target.result.split(',')[1];
-                els.img.src = ev.target.result; els.img.classList.remove('hidden');
-                els.placeholder.classList.add('hidden'); els.analyze.classList.remove('hidden');
+                el('image-display').src = ev.target.result; el('image-display').classList.remove('hidden');
+                el('placeholder-ui').classList.add('hidden'); el('analyze-btn').classList.remove('hidden');
             };
             reader.readAsDataURL(file);
         };
 
-        // Exponential Backoff API Call
-        async function callGemini(payload, key, retryCount = 0) {
-            // URL構成: models/ を分離し、正確なパスでリクエスト
-            const modelName = "gemini-1.5-flash"; // より安定しているモデルを使用
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`;
-            
-            try {
-                const res = await fetch(url, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify(payload) 
-                });
-
-                if (!res.ok) {
-                    const errorData = await res.json();
-                    throw new Error(errorData.error?.message || `HTTP ${res.status}`);
-                }
-
-                return await res.json();
-            } catch (err) {
-                if (retryCount < 3) {
-                    const delay = Math.pow(2, retryCount) * 1000;
-                    await new Promise(r => setTimeout(r, delay));
-                    return callGemini(payload, key, retryCount + 1);
-                }
-                throw err;
-            }
-        }
-
-        els.analyze.onclick = async () => {
-            const key = localStorage.getItem('gemini_api_key');
-            if (!key) { showToast("API KEY REQUIRED", true); toggleConfig(); return; }
-
-            els.analyze.classList.add('hidden'); els.loading.classList.remove('hidden'); els.scanLine.classList.remove('hidden');
-            
-            const prompt = `画像からOCRし、書籍情報を抽出してください。
-【quote】は、ページの中で最も重要または印象的な一節（線が引いてある箇所があればそこを優先）。
-JSON形式のみで返してください：
-{ "quote": "...", "full_text": "...", "chapter": "...", "book_title": "...", "author": "...", "page": 123 }`;
+        // --- GEMINI API ENGINE ---
+        async function runGeminiAnalysis(key, b64) {
+            const prompt = `画像から書籍情報を抽出しJSON形式で返してください。
+【quote】は最も重要または印象的な一節。
+【full_text】は認識できる全テキスト。
+{ "quote": "...", "full_text": "...", "chapter": "...", "book_title": "...", "author": "...", "page": "..." }`;
 
             const payload = {
                 contents: [{ parts: [
                     { text: prompt },
-                    { inlineData: { mimeType: "image/png", data: base64Image } }
+                    { inlineData: { mimeType: "image/png", data: b64 } }
                 ]}]
             };
 
+            // モデル名を2種類試行して、「Not Found」を回避する
+            const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"];
+            let lastError = null;
+
+            for (const modelName of models) {
+                // エンドポイントURLのモデル名にプレフィックスがある場合とない場合の両方を考慮
+                const urls = [
+                    `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`,
+                    `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${key}`
+                ];
+
+                for (const url of urls) {
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.ok) return await response.json();
+                        
+                        const errBody = await response.json();
+                        console.warn(`Model ${modelName} at ${url} failed:`, errBody);
+                        lastError = errBody.error?.message || "Unknown error";
+                    } catch (e) {
+                        lastError = e.message;
+                    }
+                }
+            }
+            throw new Error(lastError || "全てのモデルでリクエストが拒否されました。");
+        }
+
+        el('analyze-btn').onclick = async () => {
+            const key = localStorage.getItem('gemini_api_key');
+            if (!key) { showToast("API KEY REQUIRED", true); toggleConfig(); return; }
+
+            el('analyze-btn').classList.add('hidden'); el('loading-ui').classList.remove('hidden'); el('scan-line').classList.remove('hidden');
+            
             try {
-                const data = await callGemini(payload, key);
-                
+                const data = await runGeminiAnalysis(key, base64Image);
                 let text = data.candidates[0].content.parts[0].text;
-                // Clean markdown artifacts
                 text = text.replace(/```json/gi, "").replace(/```/g, "").trim();
                 const result = JSON.parse(text);
                 
-                els.quote.value = result.quote || "";
-                els.fullText.value = result.full_text || "";
-                els.chapter.value = result.chapter || "";
-                els.book.value = result.book_title || "";
-                els.author.value = result.author || "";
-                els.page.value = result.page ? (String(result.page)).replace(/[^0-9]/g, "") : "";
+                el('quote-field').value = result.quote || "";
+                el('fulltext-field').value = result.full_text || "";
+                el('book-field').value = result.book_title || "";
+                el('author-field').value = result.author || "";
+                el('page-field').value = result.page || "";
                 
-                els.loading.classList.add('hidden'); els.results.classList.remove('hidden');
-                showToast("✓ DIGITIZATION COMPLETE");
+                el('loading-ui').classList.add('hidden'); el('result-view').classList.remove('hidden');
+                showToast("✓ ANALYSIS COMPLETE");
             } catch (err) {
-                console.error(err);
-                showToast("ANALYSIS FAILED: " + err.message, true);
-                els.analyze.classList.remove('hidden'); els.loading.classList.add('hidden');
-            } finally { els.scanLine.classList.add('hidden'); }
+                showToast("ERROR: " + err.message, true);
+                el('analyze-btn').classList.remove('hidden'); el('loading-ui').classList.add('hidden');
+            } finally { el('scan-line').classList.add('hidden'); }
         };
 
-        els.notion.onclick = async () => {
+        el('notion-btn').onclick = async () => {
             const url = localStorage.getItem('gas_url');
             if (!url) { showToast("GAS URL REQUIRED", true); toggleConfig(); return; }
             
-            els.notion.disabled = true; els.notion.textContent = "SYNCING...";
+            el('notion-btn').disabled = true; el('notion-btn').textContent = "SYNCING...";
             const payload = {
                 action: "create",
-                quote: els.quote.value,
-                full_text: els.fullText.value,
-                chapter: els.chapter.value,
-                book_title: els.book.value,
-                author: els.author.value,
-                page: parseInt(els.page.value) || 0
+                quote: el('quote-field').value,
+                full_text: el('fulltext-field').value,
+                book_title: el('book-field').value,
+                author: el('author-field').value,
+                page: el('page-field').value
             };
 
             try {
                 await fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                showToast("✓ ARCHIVED TO NOTION");
+                showToast("✓ SYNCED TO NOTION");
                 setTimeout(resetApp, 1000);
-                fetchHistory();
-            } catch (e) { showToast("NOTION SYNC ERROR", true); }
-            finally { els.notion.disabled = false; els.notion.textContent = "Send to Notion"; }
+            } catch (e) { showToast("NOTION ERROR", true); }
+            finally { el('notion-btn').disabled = false; el('notion-btn').textContent = "Send to Notion"; }
         };
 
-        async function fetchHistory() {
-            const url = localStorage.getItem('gas_url');
-            if (!url) return;
-            try {
-                const res = await fetch(`${url}?action=history&t=${Date.now()}`);
-                const data = await res.json();
-                if (data.status === "success") {
-                    historyData = data.items || [];
-                }
-            } catch (e) { console.error("History fetch failed"); }
-        }
-
-        function updateViewer() {
-            if (!historyData.length) {
-                els.vQuote.textContent = "Connect your Library to begin.";
-                return;
-            }
-            const item = historyData[Math.floor(Math.random() * historyData.length)];
-            
-            const content = document.getElementById('viewer-content');
-            content.classList.remove('opacity-100');
-            content.classList.add('opacity-0');
-            
-            setTimeout(() => {
-                els.vQuote.textContent = item.quote;
-                els.vBook.textContent = item.book;
-                els.vMeta.textContent = `${item.chapter ? item.chapter + ' // ' : ''}${item.author} // P.${item.page}`;
-                content.classList.remove('opacity-0');
-                content.classList.add('opacity-100');
-            }, 1000);
-        }
-
         function enterViewerMode() {
-            if (!historyData.length) fetchHistory();
             el('app-container').classList.add('hidden');
-            els.viewer.classList.remove('hidden');
-            updateViewer();
-            viewerInterval = setInterval(updateViewer, 15000); // 15秒おきにスライド（デモ用）
+            el('viewer-mode').classList.remove('hidden');
+            // Mock or Fetch history
+            el('viewer-quote').textContent = el('quote-field').value || "No insights captured yet.";
+            el('viewer-book').textContent = el('book-field').value || "";
+            el('viewer-meta').textContent = el('author-field').value || "";
         }
 
         function exitViewerMode() {
-            clearInterval(viewerInterval);
-            els.viewer.classList.add('hidden');
+            el('viewer-mode').classList.add('hidden');
             el('app-container').classList.remove('hidden');
         }
 
         window.onload = () => {
-            fetchHistory();
+            el('gas-url').value = localStorage.getItem('gas_url') || "";
+            el('api-key-input').value = localStorage.getItem('gemini_api_key') || "";
             if (!localStorage.getItem('gemini_api_key')) toggleConfig();
         };
     </script>
