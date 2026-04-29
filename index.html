@@ -3,31 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Book Scanner Pro v4.0</title>
+    <title>Book Scanner Pro v4.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Serif+JP:wght@400;600;900&display=swap');
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #050505; color: #f0f0f0; overflow-x: hidden; }
         .serif { font-family: 'Noto Serif JP', serif; }
-        
         .bg-glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .scan-animation { animation: scan 2.5s ease-in-out infinite; }
         @keyframes scan { 0% { top: 0%; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
-        
         .fade-in { animation: fadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
-        input:focus, textarea:focus { outline: none; border-color: #3b82f6 !important; box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <div id="app-container" class="max-w-md mx-auto w-full flex-1 flex flex-col relative">
-        <!-- HEADER -->
         <header class="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#050505]/90 backdrop-blur-md border-b border-white/5">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center font-black text-white shadow-lg shadow-blue-600/30">B</div>
-                <h1 class="font-black tracking-tighter text-xl uppercase italic">Scanner <span class="text-blue-500">v4.0</span></h1>
+                <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center font-black text-white shadow-lg">B</div>
+                <h1 class="font-black tracking-tighter text-xl uppercase italic">Scanner <span class="text-blue-500">v4.1</span></h1>
             </div>
             <button onclick="toggleConfig()" class="p-2.5 bg-white/5 text-white/50 rounded-xl hover:bg-white/10 transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>
@@ -35,91 +30,65 @@
         </header>
 
         <main class="flex-1 px-6 pb-24">
-            <!-- CAMERA/PREVIEW AREA -->
-            <div id="preview-area" class="relative mt-6 rounded-[2.5rem] bg-[#111] aspect-[3/4] overflow-hidden border border-white/10 shadow-2xl transition-all flex items-center justify-center group">
+            <!-- CAMERA/PREVIEW -->
+            <div id="preview-area" class="relative mt-6 rounded-[2.5rem] bg-[#111] aspect-[3/4] overflow-hidden border border-white/10 shadow-2xl flex items-center justify-center">
                 <input type="file" id="file-input" accept="image/*" capture="environment" class="absolute inset-0 opacity-0 cursor-pointer z-20">
-                
-                <div id="placeholder-ui" class="text-center group-hover:scale-105 transition-transform duration-500">
-                    <div class="w-20 h-20 bg-blue-600/10 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-600/20 shadow-inner">
+                <div id="placeholder-ui" class="text-center">
+                    <div class="w-20 h-20 bg-blue-600/10 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-600/20">
                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     </div>
-                    <p class="text-[10px] font-black tracking-[0.5em] text-white/30 uppercase">Tap to Capture Book</p>
+                    <p class="text-[10px] font-black tracking-[0.5em] text-white/30 uppercase">Tap to Capture</p>
                 </div>
-
                 <img id="image-display" class="hidden absolute inset-0 w-full h-full object-cover">
-                <div id="scan-line" class="hidden absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_20px_#3b82f6] z-10 scan-animation"></div>
+                <div id="scan-line" class="hidden absolute top-0 left-0 w-full h-1 bg-blue-500 shadow-[0_0_20px_#3b82f6] z-10 scan-animation"></div>
             </div>
 
-            <!-- UI STATE: ANALYZE BUTTON -->
+            <!-- ACTION AREA -->
             <div id="action-area" class="mt-8">
-                <button id="analyze-btn" class="hidden w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl text-white font-black text-sm active:scale-[0.98] transition-all uppercase tracking-[0.2em] shadow-xl shadow-blue-600/20">Analyze with Gemini</button>
-                
+                <button id="analyze-btn" class="hidden w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl text-white font-black text-sm uppercase tracking-[0.2em] shadow-xl shadow-blue-600/20 active:scale-95 transition-all">Analyze with Gemini</button>
                 <div id="loading-ui" class="hidden py-8 space-y-5 text-center">
                     <div class="inline-block w-10 h-10 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
-                    <p class="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em] animate-pulse">Running Neural OCR...</p>
+                    <p class="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em]">Processing Neural Engine...</p>
                 </div>
             </div>
 
-            <!-- UI STATE: RESULT VIEW -->
+            <!-- RESULT VIEW -->
             <div id="result-view" class="hidden mt-8 space-y-6 fade-in pb-12">
-                <div class="bg-glass rounded-[2rem] p-7 space-y-7 border border-white/10">
+                <div class="bg-glass rounded-[2rem] p-7 space-y-6 border border-white/10">
                     <div class="flex justify-between items-center border-b border-white/5 pb-4">
-                        <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Metadata Extracted</span>
-                        <button onclick="resetApp()" class="text-[9px] font-bold text-white/20 hover:text-white/40 uppercase tracking-widest">Clear</button>
+                        <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Extracted Data</span>
+                        <button onclick="resetApp()" class="text-[9px] font-bold text-white/20 uppercase">Clear</button>
                     </div>
-
-                    <div class="space-y-3">
-                        <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Core Insight</label>
-                        <textarea id="quote-field" class="w-full bg-black/30 p-5 rounded-2xl text-[17px] serif leading-relaxed text-white/90 border border-white/5 resize-none" rows="5"></textarea>
+                    <div class="space-y-2">
+                        <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Quote</label>
+                        <textarea id="quote-field" class="w-full bg-black/30 p-5 rounded-2xl text-[17px] serif leading-relaxed text-white/90 border border-white/5 resize-none" rows="4"></textarea>
                     </div>
-
-                    <div class="grid grid-cols-1 gap-5">
-                        <div class="space-y-2">
-                            <label class="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Title</label>
-                            <input id="book-field" class="w-full bg-black/30 p-4 rounded-xl text-sm font-bold border border-white/5 text-white/80">
-                        </div>
+                    <div class="grid grid-cols-1 gap-4">
+                        <input id="book-field" placeholder="Title" class="w-full bg-black/30 p-4 rounded-xl text-sm font-bold border border-white/5 text-white/80">
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Author</label>
-                                <input id="author-field" class="w-full bg-black/30 p-4 rounded-xl text-sm font-bold border border-white/5 text-white/80">
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Page</label>
-                                <input id="page-field" class="w-full bg-black/30 p-4 rounded-xl text-sm font-bold border border-white/5 text-white/80">
-                            </div>
+                            <input id="author-field" placeholder="Author" class="w-full bg-black/30 p-4 rounded-xl text-sm font-bold border border-white/5 text-white/80">
+                            <input id="page-field" placeholder="Page" class="w-full bg-black/30 p-4 rounded-xl text-sm font-bold border border-white/5 text-white/80">
                         </div>
                     </div>
                 </div>
-
-                <button id="notion-btn" class="w-full bg-white text-black py-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M4.459 4.218c.856-.472 2.012-.763 3.441-.856l11.455-.744a1 1 0 0 1 1.066.983v15.8a1 1 0 0 1-.956.998l-12.115.787a1 1 0 0 1-1.065-.983V4.218zm1.903.856V19.81l9.143-.594V5.668l-9.143.594z"/></svg>
-                    Send to Notion
-                </button>
+                <button id="notion-btn" class="w-full bg-white text-black py-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-95 transition-all">Send to Notion</button>
             </div>
         </main>
 
-        <!-- CONFIG -->
+        <!-- CONFIG MODAL -->
         <div id="config-modal" class="hidden fixed inset-0 bg-[#050505]/98 z-[100] backdrop-blur-2xl flex flex-col justify-center p-10">
-            <div class="max-w-xs mx-auto w-full space-y-12">
-                <h2 class="text-3xl font-black italic tracking-tighter text-white">CONNECTION</h2>
-                <div class="space-y-6">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest">Gemini API Key</label>
-                        <input type="password" id="api-key-input" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none text-sm font-mono" placeholder="AI Studio Key">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest">Notion Hook URL</label>
-                        <input type="text" id="gas-url" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none text-[10px] font-mono" placeholder="https://script.google.com/...">
-                    </div>
+            <div class="max-w-xs mx-auto w-full space-y-8">
+                <h2 class="text-2xl font-black italic text-white uppercase">Settings</h2>
+                <div class="space-y-4">
+                    <input type="password" id="api-key-input" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none text-sm font-mono text-white" placeholder="Gemini API Key">
+                    <input type="text" id="gas-url" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none text-[10px] font-mono text-white" placeholder="Notion Hook URL">
                 </div>
-                <div class="flex gap-3">
-                    <button onclick="toggleConfig()" class="flex-1 bg-white/5 p-5 rounded-2xl font-bold text-[10px] text-white/40 uppercase">Back</button>
-                    <button onclick="saveConfig()" class="flex-[2] bg-blue-600 p-5 rounded-2xl font-black text-xs uppercase shadow-xl shadow-blue-600/30">Save</button>
-                </div>
+                <button onclick="saveConfig()" class="w-full bg-blue-600 p-5 rounded-2xl font-black text-xs uppercase shadow-lg">Save Configuration</button>
+                <button onclick="toggleConfig()" class="w-full text-white/30 text-[10px] font-bold uppercase tracking-widest">Cancel</button>
             </div>
         </div>
 
-        <div id="toast" class="hidden fixed bottom-10 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-4 rounded-2xl text-[10px] font-black shadow-2xl z-[200] fade-in whitespace-nowrap"></div>
+        <div id="toast" class="hidden fixed bottom-10 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-4 rounded-2xl text-[10px] font-black shadow-2xl z-[200] fade-in"></div>
     </div>
 
     <script>
@@ -128,19 +97,18 @@
 
         function toggleConfig() { el('config-modal').classList.toggle('hidden'); }
         function saveConfig() {
-            localStorage.setItem('gas_url_v4', el('gas-url').value.trim());
-            localStorage.setItem('gemini_api_key_v4', el('api-key-input').value.trim());
+            localStorage.setItem('gas_url_v41', el('gas-url').value.trim());
+            localStorage.setItem('gemini_api_key_v41', el('api-key-input').value.trim());
             toggleConfig();
-            showToast("✓ CONFIG SYNCED");
+            showToast("✓ SAVED");
         }
 
         function showToast(m, isErr = false) {
             const t = el('toast');
             t.textContent = m; 
-            t.style.backgroundColor = isErr ? "#ef4444" : "white";
-            t.style.color = isErr ? "white" : "black";
+            t.className = `fixed bottom-10 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl text-[10px] font-black shadow-2xl z-[200] fade-in ${isErr ? 'bg-red-500 text-white' : 'bg-white text-black'}`;
             t.classList.remove('hidden');
-            setTimeout(() => { t.classList.add('hidden') }, 3500);
+            setTimeout(() => { t.classList.add('hidden') }, 4000);
         }
 
         function resetApp() {
@@ -160,50 +128,48 @@
             reader.readAsDataURL(file);
         };
 
-        // --- GEMINI v4.0 STABLE ENGINE ---
+        // --- GEMINI v4.1 STABLE ENGINE ---
         async function runGeminiAnalysis(key, b64) {
-            // models/ 接頭辞を付けない形式でリスト化
-            const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"];
+            // エラーを避けるため、URLに直接モデル名をハードコードしたパスを複数用意
+            const endpoints = [
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${key}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${key}`
+            ];
             
-            const prompt = `書籍のページ画像から、引用(quote)、全文(full_text)、書名(book_title)、著者(author)、ページ番号(page)を抽出し、以下のJSON形式でのみ返してください。
-{ "quote": "...", "full_text": "...", "book_title": "...", "author": "...", "page": "..." }`;
-
             const payload = {
                 contents: [{ parts: [
-                    { text: prompt },
+                    { text: "画像のテキストを読み取り、以下のJSON形式で出力してください。quote(印象的な文), book_title, author, page。余計な解説は不要です。\nJSON format: { \"quote\": \"\", \"book_title\": \"\", \"author\": \"\", \"page\": \"\" }" },
                     { inlineData: { mimeType: "image/png", data: b64 } }
                 ]}]
             };
 
-            let lastErrorMsg = "";
+            let lastError = "";
 
-            for (const mName of models) {
-                // 接頭辞なしのモデル名を使用
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${mName}:generateContent?key=${key}`;
-                
+            for (const url of endpoints) {
                 try {
-                    const response = await fetch(url, {
+                    console.log("Trying endpoint:", url.split('?')[0]);
+                    const res = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
 
-                    const data = await response.json();
-                    
-                    if (response.ok && data.candidates) return data;
-                    
-                    lastErrorMsg = data.error?.message || "Response error";
-                    console.log(`Failed for ${mName}: ${lastErrorMsg}`);
+                    const data = await res.json();
+                    if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+                        return data.candidates[0].content.parts[0].text;
+                    }
+                    lastError = data.error?.message || "Invalid response structure";
+                    console.warn("Endpoint failed:", lastError);
                 } catch (e) {
-                    lastErrorMsg = e.message;
-                    console.error(`Network error for ${mName}`);
+                    lastError = e.message;
                 }
             }
-            throw new Error(lastErrorMsg || "All models failed");
+            throw new Error(lastError);
         }
 
         el('analyze-btn').onclick = async () => {
-            const key = localStorage.getItem('gemini_api_key_v4');
+            const key = localStorage.getItem('gemini_api_key_v41');
             if (!key) { showToast("API KEY REQUIRED", true); toggleConfig(); return; }
 
             el('analyze-btn').classList.add('hidden'); 
@@ -211,15 +177,11 @@
             el('scan-line').classList.remove('hidden');
             
             try {
-                const data = await runGeminiAnalysis(key, base64Image);
-                let rawText = data.candidates[0].content.parts[0].text;
-                
-                // JSON抽出
+                const rawText = await runGeminiAnalysis(key, base64Image);
                 const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-                if (!jsonMatch) throw new Error("JSON structure not found in response.");
+                if (!jsonMatch) throw new Error("JSON not found");
                 
                 const result = JSON.parse(jsonMatch[0]);
-                
                 el('quote-field').value = result.quote || "";
                 el('book-field').value = result.book_title || "";
                 el('author-field').value = result.author || "";
@@ -229,7 +191,7 @@
                 el('result-view').classList.remove('hidden');
                 showToast("✓ ANALYSIS COMPLETE");
             } catch (err) {
-                showToast("API ERROR: " + err.message, true);
+                showToast("FAILED: " + err.message, true);
                 el('analyze-btn').classList.remove('hidden'); 
                 el('loading-ui').classList.add('hidden');
             } finally { 
@@ -238,44 +200,34 @@
         };
 
         el('notion-btn').onclick = async () => {
-            const url = localStorage.getItem('gas_url_v4');
+            const url = localStorage.getItem('gas_url_v41');
             if (!url) { showToast("NOTION URL REQUIRED", true); toggleConfig(); return; }
             
-            const originalText = el('notion-btn').innerHTML;
-            el('notion-btn').disabled = true; 
-            el('notion-btn').textContent = "SYNCING...";
+            const btn = el('notion-btn');
+            btn.disabled = true; btn.textContent = "SYNCING...";
             
-            const payload = {
-                action: "create",
-                quote: el('quote-field').value,
-                book_title: el('book-field').value,
-                author: el('author-field').value,
-                page: el('page-field').value
-            };
-
             try {
                 await fetch(url, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload) 
+                    method: 'POST', mode: 'no-cors',
+                    body: JSON.stringify({
+                        quote: el('quote-field').value,
+                        book_title: el('book-field').value,
+                        author: el('author-field').value,
+                        page: el('page-field').value
+                    }) 
                 });
-                showToast("✓ NOTION SYNC SUCCESS");
+                showToast("✓ SENT TO NOTION");
                 setTimeout(resetApp, 1500);
             } catch (e) { 
-                showToast("SYNC FAILED", true); 
+                showToast("SYNC ERROR", true); 
             } finally { 
-                el('notion-btn').disabled = false; 
-                el('notion-btn').innerHTML = originalText; 
+                btn.disabled = false; btn.textContent = "Send to Notion"; 
             }
         };
 
         window.onload = () => {
-            el('gas-url').value = localStorage.getItem('gas_url_v4') || "";
-            el('api-key-input').value = localStorage.getItem('gemini_api_key_v4') || "";
-            if (!localStorage.getItem('gemini_api_key_v4')) {
-                setTimeout(toggleConfig, 800);
-            }
+            el('gas-url').value = localStorage.getItem('gas_url_v41') || "";
+            el('api-key-input').value = localStorage.getItem('gemini_api_key_v41') || "";
         };
     </script>
 </body>
