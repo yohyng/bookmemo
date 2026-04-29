@@ -175,7 +175,9 @@
     </div>
 
     <script>
-        const apiKey = ""; 
+        // 【重要】Vercelデプロイ時はここに自身の Gemini API キーを記入してください
+        const apiKey = "AIzaSyCvFleZTwfK__IhU5mwX3OO2RfyFo5VjB4"; 
+        
         const el = id => document.getElementById(id);
         const els = {
             appContainer: el('app-container'),
@@ -245,9 +247,13 @@
         };
 
         els.analyze.onclick = async () => {
+            if (!apiKey || apiKey.includes("YOUR_GEMINI_API_KEY")) {
+                showToast("API KEY IS MISSING", true);
+                return;
+            }
+
             els.analyze.classList.add('hidden'); els.loading.classList.remove('hidden'); els.scanLine.classList.remove('hidden');
             
-            // 重要: ハイライト箇所（手書きの線など）を優先的に抽出するプロンプト
             const prompt = `画像内のテキストをOCRし、情報を構造化してください。
 特に【quote】については、画像の中で「文章の横や下に手書きの線、マーカー、付箋」などで強調されている箇所を特定し、その対象の文章を抜き出してください。線がない場合は、最も重要と思われる一節を選んでください。
 
@@ -283,6 +289,11 @@
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
                 const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await res.json();
+                
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+
                 const result = JSON.parse(data.candidates[0].content.parts[0].text);
                 els.quote.value = result.quote || "";
                 els.fullText.value = result.full_text || "";
@@ -292,7 +303,8 @@
                 els.page.value = (result.page || "").replace(/[^0-9]/g, "");
                 els.loading.classList.add('hidden'); els.results.classList.remove('hidden');
             } catch (err) {
-                showToast("AI ANALYSIS FAILED", true); 
+                console.error(err);
+                showToast("AI ANALYSIS FAILED: " + err.message, true); 
                 els.analyze.classList.remove('hidden'); els.loading.classList.add('hidden');
             } finally { els.scanLine.classList.add('hidden'); }
         };
