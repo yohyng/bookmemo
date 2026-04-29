@@ -3,156 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Book Scanner Pro v3.8</title>
+    <title>Book Scanner Pro v3.9</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Serif+JP:wght@400;600;900&display=swap');
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #080808; color: #e5e5e5; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #080808; color: #e5e5e5; overflow-x: hidden; }
         .serif { font-family: 'Noto Serif JP', serif; }
         
-        .scan-animation { animation: scan 2.5s ease-in-out infinite; }
-        @keyframes scan { 0% { top: 0; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        /* プレミアムなスキャンアニメーション */
+        .scan-animation { animation: scan 2s ease-in-out infinite; }
+        @keyframes scan { 0% { top: 0%; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
         
-        .bg-glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .fade-in { animation: fadeIn 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .bg-glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        input:focus, textarea:focus { outline: none; border-color: #3b82f6 !important; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-blue-500/30">
+<body class="min-h-screen flex flex-col">
 
-    <div id="app-container" class="max-w-md mx-auto w-full flex-1 flex flex-col relative overflow-hidden">
-        <header class="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#080808]/90 backdrop-blur-lg border-b border-white/5">
+    <div id="app-container" class="max-w-md mx-auto w-full flex-1 flex flex-col relative">
+        <!-- HEADER -->
+        <header class="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#080808]/80 backdrop-blur-md border-b border-white/5">
             <div class="flex items-center gap-3">
-                <div class="w-7 h-7 bg-blue-600 rounded flex items-center justify-center font-black text-xs shadow-lg shadow-blue-600/30">B</div>
-                <h1 class="font-black tracking-tighter text-base uppercase italic text-white/90">Scanner Pro <span class="text-blue-500">v3.8</span></h1>
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-black text-white shadow-lg shadow-blue-600/40">B</div>
+                <h1 class="font-black tracking-tighter text-lg uppercase italic text-white/90">Scanner <span class="text-blue-500">v3.9</span></h1>
             </div>
             <div class="flex gap-2">
-                <button onclick="enterViewerMode()" title="Viewer Mode" class="p-2.5 bg-white/5 text-white/60 rounded-xl hover:bg-white/10 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                </button>
-                <button onclick="toggleConfig()" class="p-2.5 bg-white/5 text-white/60 rounded-xl hover:bg-white/10 transition-colors">
+                <button onclick="toggleConfig()" class="p-2.5 bg-white/5 text-white/60 rounded-xl hover:bg-white/10 transition-all active:scale-90">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>
                 </button>
             </div>
         </header>
 
-        <main class="flex-1 px-6 pb-32 overflow-y-auto">
-            <div id="preview-area" class="relative mt-6 rounded-[2rem] bg-[#111] aspect-[3/4] overflow-hidden border border-white/5 shadow-inner transition-all flex items-center justify-center group">
+        <main class="flex-1 px-6 pb-24 overflow-y-auto">
+            <!-- PREVIEW AREA -->
+            <div id="preview-area" class="relative mt-8 rounded-[2.5rem] bg-[#111] aspect-[3/4] overflow-hidden border border-white/10 shadow-2xl transition-all flex items-center justify-center group">
                 <input type="file" id="file-input" accept="image/*" capture="environment" class="absolute inset-0 opacity-0 cursor-pointer z-20">
                 
-                <div id="placeholder-ui" class="text-center group-hover:scale-105 transition-transform">
-                    <div class="w-16 h-16 bg-blue-600/10 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-600/20">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <div id="placeholder-ui" class="text-center group-hover:scale-105 transition-transform duration-500">
+                    <div class="w-20 h-20 bg-blue-600/10 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-600/20">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     </div>
-                    <p class="text-[10px] font-black tracking-[0.4em] text-white/30 uppercase">Capture Page</p>
+                    <p class="text-[10px] font-black tracking-[0.5em] text-white/40 uppercase">Tap to Scan Page</p>
                 </div>
 
                 <img id="image-display" class="hidden absolute inset-0 w-full h-full object-cover">
-                <div id="scan-line" class="hidden absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_20px_#3b82f6] z-10 scan-animation"></div>
+                <div id="scan-line" class="hidden absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_25px_#3b82f6] z-10 scan-animation"></div>
             </div>
 
-            <div id="action-area" class="mt-8">
-                <button id="analyze-btn" class="hidden w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl text-white font-black text-sm active:scale-[0.98] transition-all uppercase tracking-[0.2em]">Analyze with Gemini</button>
+            <!-- ACTION AREA -->
+            <div id="action-area" class="mt-10">
+                <button id="analyze-btn" class="hidden w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl text-white font-black text-sm active:scale-[0.97] transition-all uppercase tracking-[0.25em] shadow-xl shadow-blue-600/20">Analyze with Gemini</button>
                 
-                <div id="loading-ui" class="hidden py-10 space-y-4 text-center">
-                    <div class="inline-block w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
-                    <p class="text-[9px] font-bold text-white/20 uppercase tracking-widest">Digitizing Artifact...</p>
+                <div id="loading-ui" class="hidden py-12 space-y-6 text-center">
+                    <div class="relative inline-block">
+                        <div class="w-12 h-12 border-4 border-blue-500/10 border-t-blue-500 rounded-full animate-spin"></div>
+                    </div>
+                    <p class="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] animate-pulse">Processing Artifact...</p>
                 </div>
             </div>
 
-            <div id="result-view" class="hidden mt-8 space-y-6 fade-in">
-                <div class="bg-glass rounded-3xl p-6 space-y-6 border border-white/10 shadow-2xl">
-                    <div class="flex justify-between items-center border-b border-white/5 pb-4">
-                        <span class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Extracted Insight</span>
-                        <button onclick="resetApp()" class="text-[10px] font-bold text-white/20 hover:text-white/50 transition-colors uppercase">Discard</button>
+            <!-- RESULT VIEW -->
+            <div id="result-view" class="hidden mt-10 space-y-8 fade-in pb-12">
+                <div class="bg-glass rounded-[2rem] p-8 space-y-8 border border-white/10 shadow-2xl">
+                    <div class="flex justify-between items-center border-b border-white/5 pb-5">
+                        <span class="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em]">Insight Extracted</span>
+                        <button onclick="resetApp()" class="text-[10px] font-bold text-white/30 hover:text-white/60 transition-colors uppercase tracking-widest">Discard</button>
                     </div>
 
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white/40 uppercase tracking-wider">The Insight (Quote)</label>
-                        <textarea id="quote-field" class="w-full bg-black/40 p-4 rounded-xl text-base serif leading-relaxed text-white/90 border border-white/5 focus:border-blue-500/50 focus:ring-0 transition-all resize-none" rows="5"></textarea>
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">The Core Quote</label>
+                        <textarea id="quote-field" class="w-full bg-black/40 p-5 rounded-2xl text-lg serif leading-relaxed text-white/90 border border-white/5 transition-all resize-none" rows="5"></textarea>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-2">
-                            <label class="text-[9px] font-black text-white/40 uppercase tracking-wider">Book Title</label>
-                            <input id="book-field" class="w-full bg-black/40 p-3 rounded-xl text-sm font-bold border border-white/5">
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Book Title</label>
+                            <input id="book-field" class="w-full bg-black/40 p-4 rounded-xl text-sm font-bold border border-white/5">
                         </div>
-                        <div>
-                            <label class="text-[9px] font-black text-white/40 uppercase tracking-wider">Author</label>
-                            <input id="author-field" class="w-full bg-black/40 p-3 rounded-xl text-sm font-bold border border-white/5">
-                        </div>
-                        <div>
-                            <label class="text-[9px] font-black text-white/40 uppercase tracking-wider">Page</label>
-                            <input id="page-field" type="text" class="w-full bg-black/40 p-3 rounded-xl text-sm font-bold border border-white/5">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Author</label>
+                                <input id="author-field" class="w-full bg-black/40 p-4 rounded-xl text-sm font-bold border border-white/5">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Page</label>
+                                <input id="page-field" type="text" class="w-full bg-black/40 p-4 rounded-xl text-sm font-bold border border-white/5">
+                            </div>
                         </div>
                     </div>
                     
                     <textarea id="fulltext-field" class="hidden"></textarea>
                 </div>
 
-                <button id="notion-btn" class="w-full bg-white text-black py-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all">
+                <button id="notion-btn" class="w-full bg-white text-black py-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-[0.97] transition-all shadow-2xl shadow-white/5">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M4.459 4.218c.856-.472 2.012-.763 3.441-.856l11.455-.744a1 1 0 0 1 1.066.983v15.8a1 1 0 0 1-.956.998l-12.115.787a1 1 0 0 1-1.065-.983V4.218zm1.903.856V19.81l9.143-.594V5.668l-9.143.594z"/></svg>
-                    Send to Notion
+                    Export to Notion
                 </button>
             </div>
         </main>
 
-        <div id="config-modal" class="hidden fixed inset-0 bg-black/98 z-[100] backdrop-blur-2xl flex flex-col justify-center p-8">
-            <div class="max-w-xs mx-auto w-full space-y-8">
-                <h2 class="text-3xl font-black italic tracking-tighter text-white">SYSTEM<br>CONFIG</h2>
-                <div class="space-y-4">
+        <!-- CONFIG MODAL -->
+        <div id="config-modal" class="hidden fixed inset-0 bg-[#080808]/95 z-[100] backdrop-blur-3xl flex flex-col justify-center p-8">
+            <div class="max-w-xs mx-auto w-full space-y-10">
+                <div>
+                    <h2 class="text-4xl font-black italic tracking-tighter text-white">SYSTEM<br>CONFIG</h2>
+                    <p class="text-[10px] text-white/30 font-bold mt-2 tracking-widest uppercase">Connectivity Settings</p>
+                </div>
+                <div class="space-y-5">
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Gemini API Key</label>
-                        <input type="password" id="api-key-input" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500/50 text-sm" placeholder="AI Studio Key...">
+                        <label class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Google Gemini API Key</label>
+                        <input type="password" id="api-key-input" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none text-sm font-mono" placeholder="AI Studio API Key">
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Notion GAS URL</label>
-                        <input type="text" id="gas-url" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500/50 text-[10px] font-mono" placeholder="https://script.google.com/...">
+                        <input type="text" id="gas-url" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none text-[10px] font-mono" placeholder="https://script.google.com/...">
                     </div>
                 </div>
-                <button onclick="saveConfig()" class="w-full bg-blue-600 p-5 rounded-2xl font-black text-sm active:scale-95 transition-all">Save Changes</button>
+                <div class="flex gap-3">
+                    <button onclick="toggleConfig()" class="flex-1 bg-white/5 p-5 rounded-2xl font-bold text-xs text-white/40 active:scale-95 transition-all">Cancel</button>
+                    <button onclick="saveConfig()" class="flex-[2] bg-blue-600 p-5 rounded-2xl font-black text-sm active:scale-95 transition-all shadow-xl shadow-blue-600/30">Save Config</button>
+                </div>
             </div>
         </div>
 
-        <div id="toast" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-4 rounded-full text-[10px] font-black shadow-2xl z-[200]"></div>
-    </div>
-
-    <!-- Viewer -->
-    <div id="viewer-mode" class="hidden fixed inset-0 bg-[#060606] z-[1000] flex flex-col items-center justify-center p-8">
-        <div id="viewer-content" class="max-w-5xl w-full text-center space-y-12 transition-opacity duration-700">
-            <p id="viewer-quote" class="serif text-3xl md:text-5xl text-white/95 leading-[1.8]"></p>
-            <div class="space-y-2">
-                <h2 id="viewer-book" class="text-white/40 font-black tracking-widest text-lg italic"></h2>
-                <p id="viewer-meta" class="text-white/20 text-[10px] font-bold tracking-widest uppercase"></p>
-            </div>
-        </div>
-        <button onclick="exitViewerMode()" class="absolute top-10 right-10 p-4 bg-white/5 text-white/20 rounded-full">✕</button>
+        <div id="toast" class="hidden fixed bottom-10 left-1/2 -translate-x-1/2 bg-white text-black px-10 py-5 rounded-2xl text-xs font-black shadow-2xl z-[200] fade-in"></div>
     </div>
 
     <script>
         const el = id => document.getElementById(id);
         let base64Image = "";
-        let historyData = [];
 
         function toggleConfig() { el('config-modal').classList.toggle('hidden'); }
         function saveConfig() {
             localStorage.setItem('gas_url', el('gas-url').value.trim());
             localStorage.setItem('gemini_api_key', el('api-key-input').value.trim());
             toggleConfig();
-            showToast("✓ CONFIG SAVED");
+            showToast("✓ SYSTEM UPDATED");
         }
 
         function showToast(m, isErr = false) {
             const t = el('toast');
-            t.textContent = m; t.style.backgroundColor = isErr ? "#ef4444" : "white";
+            t.textContent = m; 
+            t.style.backgroundColor = isErr ? "#ef4444" : "white";
             t.style.color = isErr ? "white" : "black";
             t.classList.remove('hidden');
-            setTimeout(() => { t.classList.add('hidden') }, 3500);
+            setTimeout(() => { t.classList.add('hidden') }, 4000);
         }
 
         function resetApp() {
             el('result-view').classList.add('hidden'); el('placeholder-ui').classList.remove('hidden');
             el('image-display').classList.add('hidden'); el('analyze-btn').classList.add('hidden');
+            el('file-input').value = "";
         }
 
         el('file-input').onchange = (e) => {
@@ -166,11 +170,15 @@
             reader.readAsDataURL(file);
         };
 
-        // --- GEMINI API ENGINE ---
+        // --- GEMINI v3.9 ENGINE (Fixing "Not Found" Error) ---
         async function runGeminiAnalysis(key, b64) {
+            // URLから 'models/' を外して動的に結合する方式に変更
+            const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"];
+            
             const prompt = `画像から書籍情報を抽出しJSON形式で返してください。
 【quote】は最も重要または印象的な一節。
 【full_text】は認識できる全テキスト。
+chapter(章)などもあれば抽出してください。
 { "quote": "...", "full_text": "...", "chapter": "...", "book_title": "...", "author": "...", "page": "..." }`;
 
             const payload = {
@@ -180,49 +188,51 @@
                 ]}]
             };
 
-            // モデル名を2種類試行して、「Not Found」を回避する
-            const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"];
-            let lastError = null;
+            let lastError = "";
 
-            for (const modelName of models) {
-                // エンドポイントURLのモデル名にプレフィックスがある場合とない場合の両方を考慮
-                const urls = [
-                    `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`,
-                    `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${key}`
-                ];
+            for (const mName of modelNames) {
+                // v1beta を優先使用し、モデル名にプレフィックスを付けない形式
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${mName}:generateContent?key=${key}`;
+                
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
 
-                for (const url of urls) {
-                    try {
-                        const response = await fetch(url, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-
-                        if (response.ok) return await response.json();
-                        
-                        const errBody = await response.json();
-                        console.warn(`Model ${modelName} at ${url} failed:`, errBody);
-                        lastError = errBody.error?.message || "Unknown error";
-                    } catch (e) {
-                        lastError = e.message;
-                    }
+                    const data = await response.json();
+                    
+                    if (response.ok) return data;
+                    
+                    // エラーメッセージのログ（デバッグ用）
+                    console.error(`Attempt with ${mName} failed:`, data.error?.message);
+                    lastError = data.error?.message || "Unknown error";
+                } catch (e) {
+                    console.error(`Fetch error with ${mName}:`, e);
+                    lastError = e.message;
                 }
             }
-            throw new Error(lastError || "全てのモデルでリクエストが拒否されました。");
+            throw new Error(`分析に失敗しました。キーが正しいか確認してください。\n(Last Error: ${lastError})`);
         }
 
         el('analyze-btn').onclick = async () => {
             const key = localStorage.getItem('gemini_api_key');
             if (!key) { showToast("API KEY REQUIRED", true); toggleConfig(); return; }
 
-            el('analyze-btn').classList.add('hidden'); el('loading-ui').classList.remove('hidden'); el('scan-line').classList.remove('hidden');
+            el('analyze-btn').classList.add('hidden'); 
+            el('loading-ui').classList.remove('hidden'); 
+            el('scan-line').classList.remove('hidden');
             
             try {
                 const data = await runGeminiAnalysis(key, base64Image);
                 let text = data.candidates[0].content.parts[0].text;
-                text = text.replace(/```json/gi, "").replace(/```/g, "").trim();
-                const result = JSON.parse(text);
+                
+                // JSONの抽出 (Markdownタグが含まれる場合を考慮)
+                const jsonMatch = text.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) throw new Error("JSON形式のレスポンスを取得できませんでした。");
+                
+                const result = JSON.parse(jsonMatch[0]);
                 
                 el('quote-field').value = result.quote || "";
                 el('fulltext-field').value = result.full_text || "";
@@ -230,19 +240,26 @@
                 el('author-field').value = result.author || "";
                 el('page-field').value = result.page || "";
                 
-                el('loading-ui').classList.add('hidden'); el('result-view').classList.remove('hidden');
-                showToast("✓ ANALYSIS COMPLETE");
+                el('loading-ui').classList.add('hidden'); 
+                el('result-view').classList.remove('hidden');
+                showToast("✓ INTELLIGENCE EXTRACTED");
             } catch (err) {
-                showToast("ERROR: " + err.message, true);
-                el('analyze-btn').classList.remove('hidden'); el('loading-ui').classList.add('hidden');
-            } finally { el('scan-line').classList.add('hidden'); }
+                showToast("CRITICAL: " + err.message, true);
+                el('analyze-btn').classList.remove('hidden'); 
+                el('loading-ui').classList.add('hidden');
+            } finally { 
+                el('scan-line').classList.add('hidden'); 
+            }
         };
 
         el('notion-btn').onclick = async () => {
             const url = localStorage.getItem('gas_url');
             if (!url) { showToast("GAS URL REQUIRED", true); toggleConfig(); return; }
             
-            el('notion-btn').disabled = true; el('notion-btn').textContent = "SYNCING...";
+            const originalText = el('notion-btn').innerHTML;
+            el('notion-btn').disabled = true; 
+            el('notion-btn').textContent = "UPLOADING...";
+            
             const payload = {
                 action: "create",
                 quote: el('quote-field').value,
@@ -253,31 +270,29 @@
             };
 
             try {
-                await fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                showToast("✓ SYNCED TO NOTION");
-                setTimeout(resetApp, 1000);
-            } catch (e) { showToast("NOTION ERROR", true); }
-            finally { el('notion-btn').disabled = false; el('notion-btn').textContent = "Send to Notion"; }
+                // GASはCORS制限があるため no-cors モードで送信
+                await fetch(url, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload) 
+                });
+                showToast("✓ PERSISTED TO NOTION");
+                setTimeout(resetApp, 1500);
+            } catch (e) { 
+                showToast("SYNC FAILED", true); 
+            } finally { 
+                el('notion-btn').disabled = false; 
+                el('notion-btn').innerHTML = originalText; 
+            }
         };
-
-        function enterViewerMode() {
-            el('app-container').classList.add('hidden');
-            el('viewer-mode').classList.remove('hidden');
-            // Mock or Fetch history
-            el('viewer-quote').textContent = el('quote-field').value || "No insights captured yet.";
-            el('viewer-book').textContent = el('book-field').value || "";
-            el('viewer-meta').textContent = el('author-field').value || "";
-        }
-
-        function exitViewerMode() {
-            el('viewer-mode').classList.add('hidden');
-            el('app-container').classList.remove('hidden');
-        }
 
         window.onload = () => {
             el('gas-url').value = localStorage.getItem('gas_url') || "";
             el('api-key-input').value = localStorage.getItem('gemini_api_key') || "";
-            if (!localStorage.getItem('gemini_api_key')) toggleConfig();
+            if (!localStorage.getItem('gemini_api_key')) {
+                setTimeout(toggleConfig, 1000);
+            }
         };
     </script>
 </body>
