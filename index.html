@@ -3,143 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Book Scanner Pro v3.5</title>
+    <title>Book Scanner Pro v3.6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Serif+JP:wght@600;900&display=swap');
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: black; color: white; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #0A0A0A; color: white; }
         .scan-animation { animation: scan 2s linear infinite; }
         @keyframes scan { 0% { top: 0; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
         .animate-loading { animation: loading-bar 2s ease-in-out infinite; }
         @keyframes loading-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(250%); } }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
         .serif { font-family: 'Noto Serif JP', serif; }
-        .fade-in { animation: fadeIn 1.5s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .viewer-aspect { width: 100%; max-width: 1200px; aspect-ratio: 16 / 10; display: flex; flex-direction: column; justify-content: center; padding: 2rem; }
+        .fade-in { animation: fadeIn 1.2s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .viewer-aspect { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; }
+        .bg-glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col bg-[#0A0A0A]">
+<body class="min-h-screen flex flex-col">
+    <!-- Main App Container -->
     <div id="app-container" class="max-w-md mx-auto w-full flex-1 flex flex-col relative overflow-hidden">
-        <header class="p-6 flex justify-between items-center bg-[#0A0A0A]/80 backdrop-blur-md sticky top-0 z-50">
+        <header class="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-md">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-black text-sm text-white">B</div>
-                <h1 class="font-black tracking-tighter text-lg uppercase italic text-white">Scanner Pro v3.5</h1>
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-black text-sm">B</div>
+                <h1 class="font-black tracking-tighter text-lg uppercase italic">Scanner Pro v3.6</h1>
             </div>
             <div class="flex gap-2">
-                <button onclick="enterViewerMode()" class="p-2 bg-blue-600/20 text-blue-400 rounded-full hover:bg-blue-600/30 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                <button onclick="enterViewerMode()" class="p-2 bg-blue-600/20 text-blue-400 rounded-full hover:bg-blue-600/40">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                 </button>
-                <button onclick="fetchHistory()" class="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </button>
-                <button onclick="toggleConfig()" class="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                <button onclick="toggleConfig()" class="p-2 bg-white/5 rounded-full hover:bg-white/10">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>
                 </button>
             </div>
         </header>
 
-        <main id="main-content" class="flex-1 px-6 pb-24 overflow-y-auto space-y-6 custom-scrollbar">
-            <div id="preview-container" class="relative rounded-[2.5rem] bg-[#151515] aspect-[3/4] overflow-hidden border border-white/5 flex items-center justify-center group shadow-2xl mt-4">
+        <main id="main-content" class="flex-1 px-6 pb-24 overflow-y-auto space-y-6">
+            <!-- Scan Area -->
+            <div id="preview-container" class="relative rounded-[2.5rem] bg-[#151515] aspect-[3/4] overflow-hidden border border-white/5 flex items-center justify-center shadow-2xl mt-4">
                 <input type="file" id="file-input" accept="image/*" capture="environment" class="absolute inset-0 opacity-0 cursor-pointer z-20">
-                <div id="placeholder-ui" class="text-center transition-all group-active:scale-95">
-                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl shadow-blue-600/30">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+                <div id="placeholder-ui" class="text-center">
+                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
                     </div>
-                    <p class="text-[10px] font-black tracking-[0.3em] text-white/40 uppercase">Tap to Capture</p>
+                    <p class="text-[10px] font-black tracking-[0.3em] text-white/40 uppercase">Tap to Scan Page</p>
                 </div>
                 <img id="image-display" class="hidden absolute inset-0 w-full h-full object-cover">
-                <div id="scan-line" class="hidden absolute top-0 left-0 w-full h-1 bg-blue-500 shadow-[0_0_20px_rgba(59,130,246,1)] z-10 scan-animation"></div>
+                <div id="scan-line" class="hidden absolute top-0 left-0 w-full h-1 bg-blue-500 shadow-[0_0_15px_#3b82f6] z-10 scan-animation"></div>
             </div>
 
-            <div class="flex flex-col gap-3">
-                <button id="analyze-btn" class="hidden w-full bg-blue-600 py-5 rounded-3xl text-white font-black text-lg shadow-xl active:scale-95 transition-all transform uppercase tracking-tighter">Start AI Analysis</button>
-                <button id="manual-test-btn" class="w-full bg-white/5 border border-white/10 py-4 rounded-2xl text-white/60 font-bold text-xs active:scale-95 transition-all uppercase tracking-widest">Manual Test Mode</button>
-            </div>
+            <button id="analyze-btn" class="hidden w-full bg-blue-600 py-5 rounded-3xl text-white font-black text-lg active:scale-95 transition-transform uppercase tracking-tighter shadow-lg shadow-blue-600/20">Start AI Analysis</button>
 
-            <div id="loading-ui" class="hidden py-10 space-y-4">
+            <!-- Loading UI -->
+            <div id="loading-ui" class="hidden py-8 space-y-4">
                 <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div id="loading-bar" class="h-full bg-blue-500 animate-loading" style="width: 0%"></div>
+                    <div class="h-full bg-blue-500 animate-loading" style="width: 50%"></div>
                 </div>
-                <p id="loading-text" class="text-center text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Digitizing Page...</p>
+                <p class="text-center text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Digitizing Book Data...</p>
             </div>
 
+            <!-- Result Form -->
             <div id="result-view" class="hidden space-y-6 pb-10">
-                <div class="bg-[#1A1A1A] rounded-[2rem] p-6 border border-white/5 space-y-6 shadow-xl">
+                <div class="bg-glass rounded-[2rem] p-6 space-y-5">
                     <div class="flex justify-between items-center">
-                        <p id="form-mode-label" class="text-[9px] font-black text-blue-500 uppercase tracking-widest">New Entry</p>
-                        <button onclick="resetApp()" class="text-[9px] font-black text-white/20 uppercase">Cancel</button>
+                        <p class="text-[9px] font-black text-blue-500 uppercase tracking-widest">Extracted Content</p>
+                        <button onclick="resetApp()" class="text-[9px] font-black text-white/20 uppercase">Reset</button>
                     </div>
                     <div>
-                        <p class="text-[10px] font-black text-white/30 uppercase tracking-tighter mb-2">Quote</p>
-                        <textarea id="quote-field" class="w-full bg-white/5 p-4 rounded-xl text-base font-bold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-none leading-relaxed" rows="4"></textarea>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-black text-white/30 uppercase tracking-tighter mb-2">Full Transcription</p>
-                        <textarea id="fulltext-field" class="w-full bg-white/5 p-4 rounded-xl text-sm text-white/80 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-none leading-relaxed" rows="8"></textarea>
+                        <label class="text-[10px] font-black text-white/30 uppercase mb-2 block">Quote (Main Highlight)</label>
+                        <textarea id="quote-field" class="w-full bg-white/5 p-4 rounded-2xl text-base font-bold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-none leading-relaxed" rows="4"></textarea>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="col-span-2">
-                            <p class="text-[9px] text-white/30 uppercase font-black mb-1">Book Title</p>
-                            <input id="book-field" class="bg-white/5 w-full p-3 rounded-xl text-sm font-bold text-white">
-                        </div>
-                        <div class="col-span-2">
-                            <p class="text-[9px] text-white/30 uppercase font-black mb-1">Chapter</p>
-                            <input id="chapter-field" class="bg-white/5 w-full p-3 rounded-xl text-sm font-bold text-white">
+                            <label class="text-[9px] text-white/30 uppercase font-black mb-1 block">Book Title</label>
+                            <input id="book-field" class="bg-white/5 w-full p-3 rounded-xl text-sm font-bold text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
                         </div>
                         <div>
-                            <p class="text-[9px] text-white/30 uppercase font-black mb-1">Author</p>
-                            <input id="author-field" class="bg-white/5 w-full p-3 rounded-xl text-sm font-bold text-white">
+                            <label class="text-[9px] text-white/30 uppercase font-black mb-1 block">Author</label>
+                            <input id="author-field" class="bg-white/5 w-full p-3 rounded-xl text-sm font-bold text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
                         </div>
                         <div>
-                            <p class="text-[9px] text-white/30 uppercase font-black mb-1">Page</p>
-                            <input type="number" id="page-field" class="bg-white/5 w-full p-3 rounded-xl text-sm font-bold text-white">
+                            <label class="text-[9px] text-white/30 uppercase font-black mb-1 block">Page</label>
+                            <input type="number" id="page-field" class="bg-white/5 w-full p-3 rounded-xl text-sm font-bold text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
                         </div>
                     </div>
-                    <input type="hidden" id="edit-id-field">
+                    <div>
+                        <label class="text-[10px] font-black text-white/30 uppercase mb-2 block">Chapter / Section</label>
+                        <input id="chapter-field" class="w-full bg-white/5 p-3 rounded-xl text-sm text-white/80 focus:outline-none">
+                    </div>
+                    <div class="hidden">
+                        <textarea id="fulltext-field"></textarea>
+                    </div>
                 </div>
-                <button id="notion-btn" class="w-full bg-white py-6 rounded-[2rem] text-black font-black text-lg flex items-center justify-center gap-3 active:scale-95 transition-all shadow-2xl">Save to Notion</button>
-            </div>
-
-            <div id="history-view" class="hidden space-y-4 pb-10">
-                <div class="flex justify-between items-end px-2">
-                    <h3 class="text-xl font-black italic tracking-tighter uppercase">Records</h3>
-                    <button onclick="el('history-view').classList.add('hidden')" class="text-[10px] font-bold text-white/40 uppercase">Close</button>
-                </div>
-                <div id="history-list" class="space-y-3"></div>
+                <button id="notion-btn" class="w-full bg-white py-6 rounded-3xl text-black font-black text-lg flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl">
+                    Save to Notion
+                </button>
             </div>
         </main>
 
-        <div id="config-modal" class="hidden fixed inset-0 bg-black/98 z-[110] p-8 flex flex-col justify-center backdrop-blur-2xl">
+        <!-- Config Modal -->
+        <div id="config-modal" class="hidden fixed inset-0 bg-black/95 z-[100] p-8 flex flex-col justify-center backdrop-blur-xl">
             <div class="space-y-8 max-w-sm mx-auto w-full">
-                <h2 class="text-4xl font-black tracking-tighter italic uppercase">Settings</h2>
-                <div>
-                    <label class="text-[10px] font-black text-white/30 uppercase mb-2 block tracking-widest">Gemini API Key</label>
-                    <input type="password" id="api-key-input" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500 text-xs text-blue-400" placeholder="AIキーを入力...">
+                <h2 class="text-3xl font-black tracking-tighter italic uppercase">System Setup</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[10px] font-black text-white/30 uppercase mb-2 block tracking-widest">Gemini API Key</label>
+                        <input type="password" id="api-key-input" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500 text-xs text-blue-400" placeholder="AIキーを入力...">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-white/30 uppercase mb-2 block tracking-widest">GAS Endpoint URL</label>
+                        <input type="text" id="gas-url" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500 text-xs font-mono text-blue-400" placeholder="https://script.google.com/...">
+                    </div>
                 </div>
-                <div>
-                    <label class="text-[10px] font-black text-white/30 uppercase mb-2 block tracking-widest">GAS Endpoint</label>
-                    <input type="text" id="gas-url" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500 text-xs font-mono text-blue-400" placeholder="https://script.google.com/...">
-                </div>
-                <button onclick="saveConfig()" class="w-full bg-blue-600 p-6 rounded-3xl font-black text-lg text-white">Apply Changes</button>
-                <button onclick="toggleConfig()" class="w-full text-white/20 text-[10px] font-black uppercase py-2">Close</button>
+                <button onclick="saveConfig()" class="w-full bg-blue-600 p-6 rounded-3xl font-black text-lg">Save Configuration</button>
+                <button onclick="toggleConfig()" class="w-full text-white/20 text-[10px] font-black uppercase">Cancel</button>
             </div>
         </div>
-        <div id="toast" class="hidden fixed bottom-12 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-4 rounded-full text-[10px] font-black shadow-2xl z-[200] transition-all"></div>
+
+        <div id="toast" class="hidden fixed bottom-12 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-4 rounded-full text-[10px] font-black shadow-2xl z-[200]"></div>
     </div>
 
-    <div id="viewer-mode" class="hidden fixed inset-0 bg-[#0A0A0A] z-[1000] flex items-center justify-center overflow-hidden">
-        <div id="viewer-content" class="viewer-aspect flex flex-col items-center justify-center">
-            <div class="relative w-full text-center px-4 md:px-12 max-w-5xl">
-                <p id="viewer-quote" class="serif text-2xl sm:text-3xl md:text-5xl leading-[1.8] text-white font-medium tracking-[0.05em]"></p>
-            </div>
-            <div class="mt-16 flex flex-col items-center gap-4 fade-in">
-                <div class="flex items-center gap-4"><div class="h-[1px] w-8 bg-blue-600/50"></div><h2 id="viewer-book" class="text-blue-500 font-black uppercase tracking-[0.2em] text-sm md:text-xl italic"></h2><div class="h-[1px] w-8 bg-blue-600/50"></div></div>
-                <p id="viewer-meta" class="text-white/30 text-[10px] md:text-xs font-bold uppercase tracking-[0.3em]"></p>
+    <!-- Ambient Viewer Mode -->
+    <div id="viewer-mode" class="hidden fixed inset-0 bg-[#0A0A0A] z-[1000] flex flex-col items-center justify-center overflow-hidden">
+        <div id="viewer-container" class="viewer-aspect max-w-6xl mx-auto text-center px-8 relative">
+            <div class="absolute inset-0 bg-gradient-to-b from-blue-600/5 to-transparent pointer-events-none"></div>
+            
+            <div id="viewer-content" class="relative z-10 space-y-12 fade-in">
+                <div class="flex items-center justify-center gap-4 mb-4">
+                    <div class="h-[1px] w-12 bg-blue-600/30"></div>
+                    <span class="text-blue-500 text-[10px] font-black uppercase tracking-[0.5em]">Reflection</span>
+                    <div class="h-[1px] w-12 bg-blue-600/30"></div>
+                </div>
+                <p id="viewer-quote" class="serif text-3xl sm:text-4xl md:text-6xl leading-[1.7] text-white/95 font-medium tracking-wide"></p>
+                
+                <div class="pt-8 space-y-3">
+                    <h2 id="viewer-book" class="text-white/40 font-black uppercase tracking-[0.2em] text-sm md:text-lg italic"></h2>
+                    <p id="viewer-meta" class="text-white/20 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em]"></p>
+                </div>
             </div>
         </div>
-        <button onclick="exitViewerMode()" class="absolute top-8 right-8 p-4 bg-white/5 text-white/40 rounded-full transition-all z-[1001]"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        
+        <button onclick="exitViewerMode()" class="absolute top-8 right-8 p-4 bg-white/5 text-white/20 rounded-full hover:bg-white/10 transition-all">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-[8px] font-black text-white/10 uppercase tracking-[0.5em]">Ambient Cinematic Mode</div>
     </div>
 
     <script>
@@ -149,22 +155,22 @@
             analyze: el('analyze-btn'), scanLine: el('scan-line'), results: el('result-view'),
             loading: el('loading-ui'), quote: el('quote-field'), fullText: el('fulltext-field'),
             book: el('book-field'), author: el('author-field'), page: el('page-field'), chapter: el('chapter-field'),
-            history: el('history-view'), historyList: el('history-list'), notion: el('notion-btn'), 
-            toast: el('toast'), modal: el('config-modal'), gasInput: el('gas-url'), 
-            apiKeyInput: el('api-key-input'), manualBtn: el('manual-test-btn'), viewer: el('viewer-mode'),
-            vQuote: el('viewer-quote'), vBook: el('viewer-book'), vMeta: el('viewer-meta')
+            notion: el('notion-btn'), toast: el('toast'), modal: el('config-modal'), 
+            gasInput: el('gas-url'), apiKeyInput: el('api-key-input'), 
+            viewer: el('viewer-mode'), vQuote: el('viewer-quote'), vBook: el('viewer-book'), vMeta: el('viewer-meta')
         };
 
         let base64Image = "";
         let historyData = [];
+        let viewerInterval = null;
 
         function toggleConfig() { els.modal.classList.toggle('hidden'); }
         function saveConfig() {
             localStorage.setItem('gas_url', els.gasInput.value.trim());
             localStorage.setItem('gemini_api_key', els.apiKeyInput.value.trim());
             toggleConfig();
-            showToast("✓ SETTINGS SAVED");
-            fetchHistory(true);
+            showToast("✓ CONFIG UPDATED");
+            fetchHistory();
         }
 
         function showToast(m, isErr = false) {
@@ -176,9 +182,10 @@
         function resetApp() {
             els.results.classList.add('hidden'); els.placeholder.classList.remove('hidden');
             els.img.classList.add('hidden'); els.analyze.classList.add('hidden');
-            els.manualBtn.classList.remove('hidden'); els.file.value = "";
+            els.file.value = "";
         }
 
+        // Init
         els.gasInput.value = localStorage.getItem('gas_url') || "";
         els.apiKeyInput.value = localStorage.getItem('gemini_api_key') || "";
 
@@ -189,7 +196,6 @@
                 base64Image = ev.target.result.split(',')[1];
                 els.img.src = ev.target.result; els.img.classList.remove('hidden');
                 els.placeholder.classList.add('hidden'); els.analyze.classList.remove('hidden');
-                els.manualBtn.classList.add('hidden');
             };
             reader.readAsDataURL(file);
         };
@@ -200,8 +206,9 @@
 
             els.analyze.classList.add('hidden'); els.loading.classList.remove('hidden'); els.scanLine.classList.remove('hidden');
             
-            const prompt = `画像内のテキストをOCRし構造化してください。
-【quote】は画像内で線やマーカーがある箇所を優先抽出。JSON形式のみで出力：
+            const prompt = `画像からOCRし、書籍情報を抽出してください。
+【quote】は、ページの中で最も重要または印象的な一節（線が引いてある箇所があればそこを優先）。
+JSON形式のみで返してください：
 { "quote": "...", "full_text": "...", "chapter": "...", "book_title": "...", "author": "...", "page": 123 }`;
 
             const payload = {
@@ -212,8 +219,10 @@
             };
 
             try {
-                // エンドポイントを v1/models 形式に変更 (最も安定)
-                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`;
+                // 最も安定している gemini-1.5-flash または最新の 2.0-flash-exp を試行
+                // エンドポイント構造を確実にパスベースで指定
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+                
                 const res = await fetch(url, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
@@ -236,72 +245,84 @@
                 
                 els.loading.classList.add('hidden'); els.results.classList.remove('hidden');
             } catch (err) {
-                showToast("ERROR: " + err.message, true);
+                console.error(err);
+                showToast("ANALYSIS ERROR: " + err.message, true);
                 els.analyze.classList.remove('hidden'); els.loading.classList.add('hidden');
             } finally { els.scanLine.classList.add('hidden'); }
         };
 
-        async function fetchHistory(silent = false) {
-            let url = localStorage.getItem('gas_url');
-            if (!url) return;
-            if(!silent) els.history.classList.remove('hidden');
-            try {
-                const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}action=history&cb=${Date.now()}`);
-                const data = await res.json();
-                if (data.status === "success") {
-                    historyData = data.items || [];
-                    if(!silent) renderHistory();
-                    if(!els.viewer.classList.contains('hidden')) updateViewer();
-                }
-            } catch (e) {}
-        }
-
-        function renderHistory() {
-            els.historyList.innerHTML = historyData.map(item => `
-                <div class="bg-white/5 p-5 rounded-3xl border border-white/5">
-                    <p class="text-[10px] font-black text-white/20 uppercase mb-1">${item.chapter || 'No Chapter'}</p>
-                    <p class="text-sm font-bold text-white/90">${item.quote}</p>
-                </div>
-            `).join('');
-        }
-
         els.notion.onclick = async () => {
             const url = localStorage.getItem('gas_url');
-            if (!url) return;
-            els.notion.disabled = true; els.notion.textContent = "SAVING...";
+            if (!url) { showToast("GAS URL REQUIRED", true); toggleConfig(); return; }
+            
+            els.notion.disabled = true; els.notion.textContent = "SENDING TO NOTION...";
             const payload = {
-                action: "create", quote: els.quote.value, full_text: els.fullText.value,
-                chapter: els.chapter.value, book_title: els.book.value, author: els.author.value, page: parseInt(els.page.value) || 0
+                action: "create",
+                quote: els.quote.value,
+                full_text: els.fullText.value,
+                chapter: els.chapter.value,
+                book_title: els.book.value,
+                author: els.author.value,
+                page: parseInt(els.page.value) || 0
             };
+
             try {
+                // POST with no-cors if simple redirect
                 await fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                showToast("✓ SAVED"); resetApp(); fetchHistory(true);
-            } catch (e) { showToast("FAILED", true); }
+                showToast("✓ SUCCESSFULLY SAVED");
+                resetApp();
+                fetchHistory();
+            } catch (e) { showToast("SAVE FAILED", true); }
             finally { els.notion.disabled = false; els.notion.textContent = "Save to Notion"; }
         };
 
+        async function fetchHistory() {
+            const url = localStorage.getItem('gas_url');
+            if (!url) return;
+            try {
+                const res = await fetch(`${url}?action=history&t=${Date.now()}`);
+                const data = await res.json();
+                if (data.status === "success") {
+                    historyData = data.items || [];
+                }
+            } catch (e) { console.error("History fetch error:", e); }
+        }
+
+        function updateViewer() {
+            if (!historyData.length) {
+                els.vQuote.textContent = "No records found.";
+                return;
+            }
+            const item = historyData[Math.floor(Math.random() * historyData.length)];
+            
+            // Fade effect
+            const content = document.getElementById('viewer-content');
+            content.style.opacity = 0;
+            
+            setTimeout(() => {
+                els.vQuote.textContent = item.quote;
+                els.vBook.textContent = item.book;
+                els.vMeta.textContent = `${item.chapter ? item.chapter + ' / ' : ''}${item.author} / P.${item.page}`;
+                content.style.opacity = 1;
+            }, 1000);
+        }
+
         function enterViewerMode() {
+            if (!historyData.length) { fetchHistory(); }
             document.getElementById('app-container').classList.add('hidden');
             els.viewer.classList.remove('hidden');
-            if (!historyData.length) fetchHistory(true);
             updateViewer();
+            // 5分(300秒)おきに自動更新
+            viewerInterval = setInterval(updateViewer, 300000); 
         }
 
         function exitViewerMode() {
+            clearInterval(viewerInterval);
             els.viewer.classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
         }
 
-        function updateViewer() {
-            if (!historyData.length) return;
-            const item = historyData[Math.floor(Math.random() * historyData.length)];
-            els.vQuote.textContent = item.quote;
-            els.vBook.textContent = item.book;
-            els.vMeta.textContent = `${item.chapter ? item.chapter + ' / ' : ''}${item.author} / P.${item.page}`;
-        }
-
-        els.manualBtn.onclick = () => { els.manualBtn.classList.add('hidden'); els.placeholder.classList.add('hidden'); els.results.classList.remove('hidden'); };
-        window.onload = () => fetchHistory(true);
+        window.onload = fetchHistory;
     </script>
 </body>
 </html>
