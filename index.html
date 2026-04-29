@@ -14,33 +14,21 @@
         @keyframes loading-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(250%); } }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        
         .serif { font-family: 'Noto Serif JP', serif; }
         .fade-in { animation: fadeIn 1.5s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .viewer-aspect {
-            width: 100%;
-            max-width: 1200px;
-            aspect-ratio: 16 / 10;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 2rem;
-        }
+        .viewer-aspect { width: 100%; max-width: 1200px; aspect-ratio: 16 / 10; display: flex; flex-direction: column; justify-content: center; padding: 2rem; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col bg-[#0A0A0A]">
-    <!-- Main App Layout -->
     <div id="app-container" class="max-w-md mx-auto w-full flex-1 flex flex-col relative overflow-hidden">
-        
         <header class="p-6 flex justify-between items-center bg-[#0A0A0A]/80 backdrop-blur-md sticky top-0 z-50">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-black text-sm text-white">B</div>
                 <h1 class="font-black tracking-tighter text-lg uppercase italic text-white">Scanner Pro v3.5</h1>
             </div>
             <div class="flex gap-2">
-                <button onclick="enterViewerMode()" class="p-2 bg-blue-600/20 text-blue-400 rounded-full hover:bg-blue-600/30 transition-colors" title="ビューアーモード">
+                <button onclick="enterViewerMode()" class="p-2 bg-blue-600/20 text-blue-400 rounded-full hover:bg-blue-600/30 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                 </button>
                 <button onclick="fetchHistory()" class="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
@@ -53,7 +41,6 @@
         </header>
 
         <main id="main-content" class="flex-1 px-6 pb-24 overflow-y-auto space-y-6 custom-scrollbar">
-            <!-- Capture Area -->
             <div id="preview-container" class="relative rounded-[2.5rem] bg-[#151515] aspect-[3/4] overflow-hidden border border-white/5 flex items-center justify-center group shadow-2xl mt-4">
                 <input type="file" id="file-input" accept="image/*" capture="environment" class="absolute inset-0 opacity-0 cursor-pointer z-20">
                 <div id="placeholder-ui" class="text-center transition-all group-active:scale-95">
@@ -67,166 +54,133 @@
             </div>
 
             <div class="flex flex-col gap-3">
-                <button id="analyze-btn" class="hidden w-full bg-blue-600 py-5 rounded-3xl text-white font-black text-lg shadow-xl active:scale-95 transition-all transform uppercase tracking-tighter">
-                    Start AI Analysis
-                </button>
-                <button id="manual-test-btn" class="w-full bg-white/5 border border-white/10 py-4 rounded-2xl text-white/60 font-bold text-xs active:scale-95 transition-all uppercase tracking-widest">
-                    Manual Test Mode
-                </button>
+                <button id="analyze-btn" class="hidden w-full bg-blue-600 py-5 rounded-3xl text-white font-black text-lg shadow-xl active:scale-95 transition-all transform uppercase tracking-tighter">Start AI Analysis</button>
+                <button id="manual-test-btn" class="w-full bg-white/5 border border-white/10 py-4 rounded-2xl text-white/60 font-bold text-xs active:scale-95 transition-all uppercase tracking-widest">Manual Test Mode</button>
             </div>
 
             <div id="loading-ui" class="hidden py-10 space-y-4">
                 <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div class="h-full bg-blue-500 animate-loading" style="width: 40%"></div>
+                    <div id="loading-bar" class="h-full bg-blue-500 animate-loading" style="width: 0%"></div>
                 </div>
-                <p class="text-center text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Digitizing Page...</p>
+                <p id="loading-text" class="text-center text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Digitizing Page...</p>
             </div>
 
-            <!-- Form View -->
             <div id="result-view" class="hidden space-y-6 pb-10">
                 <div class="bg-[#1A1A1A] rounded-[2rem] p-6 border border-white/5 space-y-6 shadow-xl">
                     <div class="flex justify-between items-center">
                         <p id="form-mode-label" class="text-[9px] font-black text-blue-500 uppercase tracking-widest">New Entry</p>
                         <button onclick="resetApp()" class="text-[9px] font-black text-white/20 uppercase">Cancel</button>
                     </div>
-                    
                     <div>
-                        <p class="text-[10px] font-black text-white/30 uppercase tracking-tighter mb-2">Quote (Handwritten Line Area)</p>
-                        <textarea id="quote-field" class="w-full bg-white/5 p-4 rounded-xl text-base font-bold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-none leading-relaxed" rows="4" placeholder="線が引かれた箇所を抽出中..."></textarea>
+                        <p class="text-[10px] font-black text-white/30 uppercase tracking-tighter mb-2">Quote</p>
+                        <textarea id="quote-field" class="w-full bg-white/5 p-4 rounded-xl text-base font-bold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-none leading-relaxed" rows="4"></textarea>
                     </div>
-
                     <div>
                         <p class="text-[10px] font-black text-white/30 uppercase tracking-tighter mb-2">Full Transcription</p>
-                        <textarea id="fulltext-field" class="w-full bg-white/5 p-4 rounded-xl text-sm text-white/80 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-none leading-relaxed custom-scrollbar" rows="8" placeholder="ページ全体の文字起こし..."></textarea>
+                        <textarea id="fulltext-field" class="w-full bg-white/5 p-4 rounded-xl text-sm text-white/80 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-none leading-relaxed" rows="8"></textarea>
                     </div>
-
-                    <div class="grid grid-cols-2 gap-4 pt-2">
+                    <div class="grid grid-cols-2 gap-4">
                         <div class="col-span-2">
-                            <p class="text-[9px] text-white/30 uppercase font-black mb-1 tracking-tighter">Book Title</p>
+                            <p class="text-[9px] text-white/30 uppercase font-black mb-1">Book Title</p>
                             <input id="book-field" class="bg-white/5 w-full p-3 rounded-xl text-sm font-bold text-white">
                         </div>
                         <div class="col-span-2">
-                            <p class="text-[9px] text-white/30 uppercase font-black mb-1 tracking-tighter">Chapter / Section</p>
-                            <input id="chapter-field" class="bg-white/5 w-full p-3 rounded-xl text-sm font-bold text-white" placeholder="第○章 ...">
+                            <p class="text-[9px] text-white/30 uppercase font-black mb-1">Chapter</p>
+                            <input id="chapter-field" class="bg-white/5 w-full p-3 rounded-xl text-sm font-bold text-white">
                         </div>
                         <div>
-                            <p class="text-[9px] text-white/30 uppercase font-black mb-1 tracking-tighter">Author</p>
+                            <p class="text-[9px] text-white/30 uppercase font-black mb-1">Author</p>
                             <input id="author-field" class="bg-white/5 w-full p-3 rounded-xl text-sm font-bold text-white">
                         </div>
                         <div>
-                            <p class="text-[9px] text-white/30 uppercase font-black mb-1 tracking-tighter">Page</p>
+                            <p class="text-[9px] text-white/30 uppercase font-black mb-1">Page</p>
                             <input type="number" id="page-field" class="bg-white/5 w-full p-3 rounded-xl text-sm font-bold text-white">
                         </div>
                     </div>
                     <input type="hidden" id="edit-id-field">
                 </div>
-                <button id="notion-btn" class="w-full bg-white hover:bg-gray-200 py-6 rounded-[2rem] text-black font-black text-lg flex items-center justify-center gap-3 active:scale-95 transition-all shadow-2xl">
-                    Save to Notion
-                </button>
+                <button id="notion-btn" class="w-full bg-white py-6 rounded-[2rem] text-black font-black text-lg flex items-center justify-center gap-3 active:scale-95 transition-all shadow-2xl">Save to Notion</button>
             </div>
 
-            <!-- Records History -->
             <div id="history-view" class="hidden space-y-4 pb-10">
                 <div class="flex justify-between items-end px-2">
-                    <h3 class="text-xl font-black italic tracking-tighter uppercase">Notion Records</h3>
+                    <h3 class="text-xl font-black italic tracking-tighter uppercase">Records</h3>
                     <button onclick="el('history-view').classList.add('hidden')" class="text-[10px] font-bold text-white/40 uppercase">Close</button>
                 </div>
                 <div id="history-list" class="space-y-3"></div>
             </div>
         </main>
 
-        <!-- Settings -->
         <div id="config-modal" class="hidden fixed inset-0 bg-black/98 z-[110] p-8 flex flex-col justify-center backdrop-blur-2xl">
             <div class="space-y-8 max-w-sm mx-auto w-full">
                 <h2 class="text-4xl font-black tracking-tighter italic uppercase">Settings</h2>
                 <div>
-                    <label class="text-[10px] font-black text-white/30 uppercase mb-2 block tracking-widest">GAS Endpoint URL</label>
-                    <input type="text" id="gas-url" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500 text-xs font-mono text-blue-400" placeholder="https://script.google.com/macros/s/...">
+                    <label class="text-[10px] font-black text-white/30 uppercase mb-2 block tracking-widest">Gemini API Key</label>
+                    <input type="password" id="api-key-input" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500 text-xs text-blue-400" placeholder="AIキーを入力...">
                 </div>
-                <button onclick="saveConfig()" class="w-full bg-blue-600 p-6 rounded-3xl font-black text-lg shadow-xl text-white">Apply Changes</button>
-                <button onclick="toggleConfig()" class="w-full text-white/20 text-[10px] font-black uppercase tracking-widest py-2">Close</button>
+                <div>
+                    <label class="text-[10px] font-black text-white/30 uppercase mb-2 block tracking-widest">GAS Endpoint</label>
+                    <input type="text" id="gas-url" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500 text-xs font-mono text-blue-400" placeholder="https://script.google.com/...">
+                </div>
+                <button onclick="saveConfig()" class="w-full bg-blue-600 p-6 rounded-3xl font-black text-lg text-white">Apply Changes</button>
+                <button onclick="toggleConfig()" class="w-full text-white/20 text-[10px] font-black uppercase py-2">Close</button>
             </div>
         </div>
-
-        <div id="toast" class="hidden fixed bottom-12 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-4 rounded-full text-[10px] font-black shadow-2xl z-[200] transform transition-all duration-300"></div>
+        <div id="toast" class="hidden fixed bottom-12 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-4 rounded-full text-[10px] font-black shadow-2xl z-[200] transition-all"></div>
     </div>
 
-    <!-- Ambient Viewer Mode -->
     <div id="viewer-mode" class="hidden fixed inset-0 bg-[#0A0A0A] z-[1000] flex items-center justify-center overflow-hidden">
         <div id="viewer-content" class="viewer-aspect flex flex-col items-center justify-center">
             <div class="relative w-full text-center px-4 md:px-12 max-w-5xl">
                 <p id="viewer-quote" class="serif text-2xl sm:text-3xl md:text-5xl leading-[1.8] text-white font-medium tracking-[0.05em]"></p>
             </div>
-            <div class="mt-16 flex flex-col items-center gap-4 fade-in" style="animation-delay: 0.4s">
-                <div class="flex items-center gap-4">
-                    <div class="h-[1px] w-8 bg-blue-600/50"></div>
-                    <h2 id="viewer-book" class="text-blue-500 font-black uppercase tracking-[0.2em] text-sm md:text-xl italic text-center"></h2>
-                    <div class="h-[1px] w-8 bg-blue-600/50"></div>
-                </div>
+            <div class="mt-16 flex flex-col items-center gap-4 fade-in">
+                <div class="flex items-center gap-4"><div class="h-[1px] w-8 bg-blue-600/50"></div><h2 id="viewer-book" class="text-blue-500 font-black uppercase tracking-[0.2em] text-sm md:text-xl italic"></h2><div class="h-[1px] w-8 bg-blue-600/50"></div></div>
                 <p id="viewer-meta" class="text-white/30 text-[10px] md:text-xs font-bold uppercase tracking-[0.3em]"></p>
             </div>
         </div>
-        <!-- Exit Button -->
-        <button onclick="exitViewerMode()" class="absolute top-8 right-8 p-4 bg-white/5 hover:bg-white/10 text-white/40 rounded-full transition-all z-[1001]">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-        <div class="absolute inset-0 pointer-events-none bg-gradient-to-b from-blue-900/5 via-transparent to-transparent"></div>
-        <div class="absolute bottom-8 right-8 text-[8px] font-black text-white/10 uppercase tracking-[0.2em]">Auto-sync every 5 min</div>
+        <button onclick="exitViewerMode()" class="absolute top-8 right-8 p-4 bg-white/5 text-white/40 rounded-full transition-all z-[1001]"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
     </div>
 
     <script>
-        // 【重要】Vercelデプロイ時はここに自身の Gemini API キーを記入してください
-        const apiKey = "AIzaSyCvFleZTwfK__IhU5mwX3OO2RfyFo5VjB4"; 
-        
         const el = id => document.getElementById(id);
         const els = {
-            appContainer: el('app-container'),
             file: el('file-input'), img: el('image-display'), placeholder: el('placeholder-ui'),
             analyze: el('analyze-btn'), scanLine: el('scan-line'), results: el('result-view'),
             loading: el('loading-ui'), quote: el('quote-field'), fullText: el('fulltext-field'),
-            book: el('book-field'), author: el('author-field'), page: el('page-field'), 
-            chapter: el('chapter-field'),
-            editId: el('edit-id-field'), history: el('history-view'), historyList: el('history-list'), 
-            notion: el('notion-btn'), toast: el('toast'), modal: el('config-modal'), 
-            gasInput: el('gas-url'), manualBtn: el('manual-test-btn'), viewer: el('viewer-mode'), 
+            book: el('book-field'), author: el('author-field'), page: el('page-field'), chapter: el('chapter-field'),
+            history: el('history-view'), historyList: el('history-list'), notion: el('notion-btn'), 
+            toast: el('toast'), modal: el('config-modal'), gasInput: el('gas-url'), 
+            apiKeyInput: el('api-key-input'), manualBtn: el('manual-test-btn'), viewer: el('viewer-mode'),
             vQuote: el('viewer-quote'), vBook: el('viewer-book'), vMeta: el('viewer-meta')
         };
 
         let base64Image = "";
         let historyData = [];
-        let viewerInterval = null;
 
         function toggleConfig() { els.modal.classList.toggle('hidden'); }
-        function saveConfig() { 
-            const val = els.gasInput.value.trim();
-            localStorage.setItem('gas_url', val); 
-            toggleConfig(); 
-            showToast("✓ SETTINGS SAVED"); 
+        function saveConfig() {
+            localStorage.setItem('gas_url', els.gasInput.value.trim());
+            localStorage.setItem('gemini_api_key', els.apiKeyInput.value.trim());
+            toggleConfig();
+            showToast("✓ SETTINGS SAVED");
             fetchHistory(true);
         }
-        
+
         function showToast(m, isErr = false) {
             els.toast.textContent = m; els.toast.style.backgroundColor = isErr ? "#ef4444" : "white";
-            els.toast.style.color = isErr ? "white" : "black";
-            els.toast.classList.remove('hidden', 'translate-y-10', 'opacity-0');
-            setTimeout(() => { els.toast.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => els.toast.classList.add('hidden'), 300); }, 3000);
+            els.toast.classList.remove('hidden');
+            setTimeout(() => { els.toast.classList.add('hidden') }, 3000);
         }
 
         function resetApp() {
-            els.results.classList.add('hidden');
-            els.placeholder.classList.remove('hidden');
-            els.img.classList.add('hidden');
-            els.analyze.classList.add('hidden');
-            els.manualBtn.classList.remove('hidden');
-            els.editId.value = "";
-            el('form-mode-label').textContent = "New Entry";
-            els.quote.value = ""; els.fullText.value = ""; els.book.value = ""; els.author.value = ""; els.page.value = "";
-            els.chapter.value = "";
-            els.notion.textContent = "Save to Notion";
-            els.file.value = "";
+            els.results.classList.add('hidden'); els.placeholder.classList.remove('hidden');
+            els.img.classList.add('hidden'); els.analyze.classList.add('hidden');
+            els.manualBtn.classList.remove('hidden'); els.file.value = "";
         }
 
         els.gasInput.value = localStorage.getItem('gas_url') || "";
+        els.apiKeyInput.value = localStorage.getItem('gemini_api_key') || "";
 
         els.file.onchange = (e) => {
             const file = e.target.files[0]; if (!file) return;
@@ -240,32 +194,15 @@
             reader.readAsDataURL(file);
         };
 
-        els.manualBtn.onclick = () => {
-            els.manualBtn.classList.add('hidden');
-            els.placeholder.classList.add('hidden');
-            els.results.classList.remove('hidden');
-        };
-
         els.analyze.onclick = async () => {
-            if (!apiKey || apiKey.includes("YOUR_GEMINI_API_KEY")) {
-                showToast("API KEY IS MISSING", true);
-                return;
-            }
+            const key = localStorage.getItem('gemini_api_key');
+            if (!key) { showToast("API KEY REQUIRED", true); toggleConfig(); return; }
 
             els.analyze.classList.add('hidden'); els.loading.classList.remove('hidden'); els.scanLine.classList.remove('hidden');
             
-            const prompt = `画像内のテキストをOCRし、情報を構造化してください。
-特に【quote】については、画像の中で「文章の横や下に手書きの線、マーカー、付箋」などで強調されている箇所を特定し、その対象の文章を抜き出してください。線がない場合は、最も重要と思われる一節を選んでください。
-
-以下のJSON形式で出力してください：
-{
-  "quote": "線が引かれた箇所の文章（最優先）",
-  "full_text": "ページ全体の文字起こし",
-  "chapter": "章名またはセクション名",
-  "book_title": "書籍タイトル",
-  "author": "著者名",
-  "page": "ページ番号（数字のみ）"
-}`;
+            const prompt = `画像内のテキストをOCRし構造化してください。
+【quote】は画像内で線やマーカーがある箇所を優先抽出。JSON形式のみで出力：
+{ "quote": "...", "full_text": "...", "chapter": "...", "book_title": "...", "author": "...", "page": 123 }`;
 
             const payload = {
                 contents: [{ parts: [
@@ -275,8 +212,8 @@
             };
 
             try {
-                // モデル名を最新の安定版 gemini-1.5-flash に変更
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+                // エンドポイントを v1/models 形式に変更 (最も安定)
+                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`;
                 const res = await fetch(url, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
@@ -284,15 +221,10 @@
                 });
                 
                 const data = await res.json();
-                
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
+                if (data.error) throw new Error(data.error.message);
 
-                // JSON出力を抽出（Gemini 1.5はマークダウン形式で返す場合があるためクリーニング）
                 let text = data.candidates[0].content.parts[0].text;
                 text = text.replace(/```json/g, "").replace(/```/g, "").trim();
-                
                 const result = JSON.parse(text);
                 
                 els.quote.value = result.quote || "";
@@ -302,25 +234,17 @@
                 els.author.value = result.author || "";
                 els.page.value = (String(result.page) || "").replace(/[^0-9]/g, "");
                 
-                els.loading.classList.add('hidden'); 
-                els.results.classList.remove('hidden');
+                els.loading.classList.add('hidden'); els.results.classList.remove('hidden');
             } catch (err) {
-                console.error(err);
-                showToast("AI ANALYSIS FAILED: " + err.message, true); 
-                els.analyze.classList.remove('hidden'); 
-                els.loading.classList.add('hidden');
-            } finally { 
-                els.scanLine.classList.add('hidden'); 
-            }
+                showToast("ERROR: " + err.message, true);
+                els.analyze.classList.remove('hidden'); els.loading.classList.add('hidden');
+            } finally { els.scanLine.classList.add('hidden'); }
         };
 
         async function fetchHistory(silent = false) {
             let url = localStorage.getItem('gas_url');
             if (!url) return;
-            if(!silent) {
-                els.history.classList.remove('hidden');
-                els.historyList.innerHTML = `<div class="p-10 text-center animate-pulse text-white/20 uppercase font-black text-[10px]">Syncing...</div>`;
-            }
+            if(!silent) els.history.classList.remove('hidden');
             try {
                 const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}action=history&cb=${Date.now()}`);
                 const data = await res.json();
@@ -329,31 +253,21 @@
                     if(!silent) renderHistory();
                     if(!els.viewer.classList.contains('hidden')) updateViewer();
                 }
-            } catch (e) { if(!silent) showToast("SYNC ERROR", true); }
+            } catch (e) {}
         }
 
         function renderHistory() {
-            if (!historyData.length) {
-                els.historyList.innerHTML = '<p class="text-center p-10 text-white/20 text-xs">NO RECORDS</p>';
-                return;
-            }
             els.historyList.innerHTML = historyData.map(item => `
-                <div class="bg-white/5 p-5 rounded-3xl border border-white/5 space-y-4 text-left">
-                    <div>
-                        <p class="text-[10px] font-black text-white/20 uppercase mb-1 truncate">${item.chapter || 'No Chapter'}</p>
-                        <p class="text-sm font-bold leading-snug line-clamp-3 text-white/90">${item.quote || '(No Quote)'}</p>
-                        <div class="mt-2 flex justify-between items-center opacity-40 text-[9px] font-black uppercase">
-                            <span class="truncate max-w-[60%]">${item.book}</span>
-                            <span>P.${item.page}</span>
-                        </div>
-                    </div>
+                <div class="bg-white/5 p-5 rounded-3xl border border-white/5">
+                    <p class="text-[10px] font-black text-white/20 uppercase mb-1">${item.chapter || 'No Chapter'}</p>
+                    <p class="text-sm font-bold text-white/90">${item.quote}</p>
                 </div>
             `).join('');
         }
 
         els.notion.onclick = async () => {
             const url = localStorage.getItem('gas_url');
-            if (!url) { toggleConfig(); return; }
+            if (!url) return;
             els.notion.disabled = true; els.notion.textContent = "SAVING...";
             const payload = {
                 action: "create", quote: els.quote.value, full_text: els.fullText.value,
@@ -361,42 +275,33 @@
             };
             try {
                 await fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                showToast("✓ SAVED");
-                setTimeout(resetApp, 800);
-                setTimeout(() => fetchHistory(true), 1000);
+                showToast("✓ SAVED"); resetApp(); fetchHistory(true);
             } catch (e) { showToast("FAILED", true); }
-            finally { els.notion.disabled = false; }
+            finally { els.notion.disabled = false; els.notion.textContent = "Save to Notion"; }
         };
 
         function enterViewerMode() {
-            els.appContainer.classList.add('hidden');
+            document.getElementById('app-container').classList.add('hidden');
             els.viewer.classList.remove('hidden');
-            if (historyData.length === 0) fetchHistory(true);
-            else updateViewer();
-            viewerInterval = setInterval(() => fetchHistory(true), 300000);
+            if (!historyData.length) fetchHistory(true);
+            updateViewer();
         }
 
         function exitViewerMode() {
             els.viewer.classList.add('hidden');
-            els.appContainer.classList.remove('hidden');
-            if (viewerInterval) clearInterval(viewerInterval);
+            document.getElementById('app-container').classList.remove('hidden');
         }
 
         function updateViewer() {
             if (!historyData.length) return;
             const item = historyData[Math.floor(Math.random() * historyData.length)];
-            
-            els.vQuote.classList.remove('fade-in');
-            void els.vQuote.offsetWidth;
-            els.vQuote.classList.add('fade-in');
-            
-            els.vQuote.textContent = item.quote || "No Quote Available";
+            els.vQuote.textContent = item.quote;
             els.vBook.textContent = item.book;
-            const chapterInfo = item.chapter ? `${item.chapter} / ` : "";
-            els.vMeta.textContent = `${chapterInfo}${item.author} / P.${item.page}`;
+            els.vMeta.textContent = `${item.chapter ? item.chapter + ' / ' : ''}${item.author} / P.${item.page}`;
         }
 
-        window.onload = () => { fetchHistory(true); };
+        els.manualBtn.onclick = () => { els.manualBtn.classList.add('hidden'); els.placeholder.classList.add('hidden'); els.results.classList.remove('hidden'); };
+        window.onload = () => fetchHistory(true);
     </script>
 </body>
 </html>
