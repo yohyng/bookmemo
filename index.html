@@ -258,55 +258,60 @@
 特に【quote】については、画像の中で「文章の横や下に手書きの線、マーカー、付箋」などで強調されている箇所を特定し、その対象の文章を抜き出してください。線がない場合は、最も重要と思われる一節を選んでください。
 
 以下のJSON形式で出力してください：
-1. quote: 線が引かれた箇所の文章（最優先）
-2. full_text: ページ全体の文字起こし
-3. chapter: 章名またはセクション名
-4. book_title: 書籍タイトル
-5. author: 著者名
-6. page: ページ番号（数字のみ）`;
+{
+  "quote": "線が引かれた箇所の文章（最優先）",
+  "full_text": "ページ全体の文字起こし",
+  "chapter": "章名またはセクション名",
+  "book_title": "書籍タイトル",
+  "author": "著者名",
+  "page": "ページ番号（数字のみ）"
+}`;
 
             const payload = {
-                contents: [{ role: "user", parts: [
+                contents: [{ parts: [
                     { text: prompt },
                     { inlineData: { mimeType: "image/png", data: base64Image } }
-                ]}],
-                generationConfig: { 
-                    responseMimeType: "application/json",
-                    responseSchema: { 
-                        type: "OBJECT",
-                        properties: { 
-                            quote: { type: "STRING" }, 
-                            full_text: { type: "STRING" }, 
-                            chapter: { type: "STRING" }, 
-                            book_title: { type: "STRING" }, 
-                            author: { type: "STRING" }, 
-                            page: { type: "STRING" } 
-                        } 
-                    }
-                }
+                ]}]
             };
+
             try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-                const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                // モデル名を最新の安定版 gemini-1.5-flash に変更
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+                const res = await fetch(url, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(payload) 
+                });
+                
                 const data = await res.json();
                 
                 if (data.error) {
                     throw new Error(data.error.message);
                 }
 
-                const result = JSON.parse(data.candidates[0].content.parts[0].text);
+                // JSON出力を抽出（Gemini 1.5はマークダウン形式で返す場合があるためクリーニング）
+                let text = data.candidates[0].content.parts[0].text;
+                text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+                
+                const result = JSON.parse(text);
+                
                 els.quote.value = result.quote || "";
                 els.fullText.value = result.full_text || "";
                 els.chapter.value = result.chapter || "";
                 els.book.value = result.book_title || "";
                 els.author.value = result.author || "";
-                els.page.value = (result.page || "").replace(/[^0-9]/g, "");
-                els.loading.classList.add('hidden'); els.results.classList.remove('hidden');
+                els.page.value = (String(result.page) || "").replace(/[^0-9]/g, "");
+                
+                els.loading.classList.add('hidden'); 
+                els.results.classList.remove('hidden');
             } catch (err) {
                 console.error(err);
                 showToast("AI ANALYSIS FAILED: " + err.message, true); 
-                els.analyze.classList.remove('hidden'); els.loading.classList.add('hidden');
-            } finally { els.scanLine.classList.add('hidden'); }
+                els.analyze.classList.remove('hidden'); 
+                els.loading.classList.add('hidden');
+            } finally { 
+                els.scanLine.classList.add('hidden'); 
+            }
         };
 
         async function fetchHistory(silent = false) {
